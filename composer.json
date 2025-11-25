@@ -1,0 +1,28 @@
+{
+    "name": "artsync/artsync-mvc",
+    "description": "Projeto ArtSync refatorado para MVC, OO e Repositories.",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Davi Torquato" 
+        }
+    ],
+    "require": {
+        "php": ">=8.1", 
+        "phpmailer/phpmailer": "^6.9",
+        "ext-pdo": "*",
+        "ext-fileinfo": "*",
+        "ext-curl": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/", 
+            "Config\\": "config/" 
+        }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "@php -r \"copy('.env.example', '.env');\""
+        ]
+    }
+}
