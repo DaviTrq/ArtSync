@@ -208,6 +208,10 @@ switch ($route) {
         (new ForumController())->approve();
         break;
 
+    case '/forum/delete':
+        (new ForumController())->delete();
+        break;
+
     case '/network':
         (new NetworkController())->index();
         break;
@@ -238,6 +242,22 @@ switch ($route) {
 
     case '/network/stats':
         (new NetworkController())->stats();
+        break;
+
+    case '/network/list':
+        (new NetworkController())->list();
+        break;
+
+    case '/network/check-connection':
+        (new NetworkController())->checkConnection();
+        break;
+
+    case '/network/remove':
+        if ($method === 'POST') {
+            (new NetworkController())->remove();
+        } else {
+            header('Location: /network'); exit;
+        }
         break;
 
     case '/search':

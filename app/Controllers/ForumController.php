@@ -106,6 +106,20 @@ class ForumController {
         exit;
     }
 
+    public function delete() {
+        $this->reqAdmin();
+        $idTopico = $_GET['id'] ?? null;
+        if ($idTopico) {
+            $this->repo->deleteTopic($idTopico);
+            $idioma = $_SESSION['lang'] ?? 'pt-BR';
+            $trad = require __DIR__ . '/../../config/lang.php';
+            $t = $trad[$idioma] ?? $trad['pt-BR'];
+            $_SESSION['flash_message'] = ['type' => 'success', 'message' => $t['topic_deleted'] ?? 'Tópico deletado'];
+        }
+        header('Location: /admin');
+        exit;
+    }
+
     private function reqLogin() {
         session_status() === PHP_SESSION_NONE && session_start();
         !isset($_SESSION['user_id']) && header('Location: /login') && exit;

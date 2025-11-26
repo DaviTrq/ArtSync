@@ -145,4 +145,14 @@ class PdoForumRepository implements ForumRepositoryInterface
         $stmt = $this->pdo->prepare("INSERT INTO forum_attachments (comment_id, file_path, file_type) VALUES (?, ?, ?)");
         return $stmt->execute([$commentId, $filePath, $fileType]);
     }
+
+    public function deleteTopic($id)
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM forum_attachments WHERE topic_id = ? OR comment_id IN (SELECT id FROM forum_comments WHERE topic_id = ?)");
+        $stmt->execute([$id, $id]);
+        $stmt = $this->pdo->prepare("DELETE FROM forum_comments WHERE topic_id = ?");
+        $stmt->execute([$id]);
+        $stmt = $this->pdo->prepare("DELETE FROM forum_topics WHERE id = ?");
+        return $stmt->execute([$id]);
+    }
 }
