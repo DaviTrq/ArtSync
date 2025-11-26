@@ -85,4 +85,43 @@ class NetworkController extends AuthController {
         echo json_encode(['connections' => $conex, 'followers' => $seguidores, 'following' => $seguindo]);
         exit;
     }
+
+    public function list() {
+        $stmt = $this->pdo->prepare("SELECT u.id, u.artist_name, u.email, u.profile_photo FROM users u INNER JOIN user_connections uc ON (u.id = uc.follower_id OR u.id = uc.following_id) WHERE (uc.follower_id = ? OR uc.following_id = ?) AND uc.status = 'accepted' AND u.id != ?");
+        $stmt->execute([$_SESSION['user_id'], $_SESSION['user_id'], $_SESSION['user_id']]);
+        $conex = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $stmt = $this->pdo->prepare("SELECT u.id, u.artist_name, u.email, u.profile_photo FROM users u INNER JOIN user_connections uc ON u.id = uc.follower_id WHERE uc.following_id = ? AND uc.status = 'following'");
+        $stmt->execute([$_SESSION['user_id']]);
+        $seguidores = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $stmt = $this->pdo->prepare("SELECT u.id, u.artist_name, u.email, u.profile_photo FROM users u INNER JOIN user_connections uc ON u.id = uc.following_id WHERE uc.follower_id = ? AND uc.status IN ('pending', 'following')");
+        $stmt->execute([$_SESSION['user_id']]);
+        $seguindo = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        echo json_encode(['connections' => $conex, 'followers' => $seguidores, 'following' => $seguindo]);
+        exit;
+    }
+
+    public function checkConnection() {
+        $idUsr = $_GET['user_id'] ?? null;
+        if (!$idUsr) {
+            echo json_encode(['status' => 'none']);
+            exit;
+        }
+        $stmt = $this->pdo->prepare("SELECT status FROM user_connections WHERE follower_id = ? AND following_id = ?");
+        $stmt->execute([$_SESSION['user_id'], $idUsr]);
+        $status = $stmt->fetchColumn();
+        echo json_encode(['status' => $status ?: 'none']);
+        exit;
+    }
+
+    public function remove() {
+        $idUsr = $_POST['user_id'] ?? null;
+        if (!$idUsr) {
+            echo json_encode(['success' => false]);
+            exit;
+        }
+        $stmt = $this->pdo->prepare("DELETE FROM user_connections WHERE (follower_id = ? AND following_id = ?) OR (follower_id = ? AND following_id = ?)");
+        $stmt->execute([$_SESSION['user_id'], $idUsr, $idUsr, $_SESSION['user_id']]);
+        echo json_encode(['success' => true]);
+        exit;
+    }
 }
