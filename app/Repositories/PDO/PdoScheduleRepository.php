@@ -10,27 +10,27 @@ class PdoScheduleRepository implements ScheduleRepositoryInterface {
         $this->db = Database::getInstance();
     }
     public function getByUserId(int $userId): array {
-        $stmt = $this->db->prepare("SELECT * FROM schedule WHERE user_id = :uid ORDER BY event_date ASC");
+        $stmt = $this->db->prepare("SELECT * FROM schedule_events WHERE user_id = :uid ORDER BY event_date ASC");
         $stmt->execute(['uid' => $userId]);
         $events = [];
         while ($row = $stmt->fetch()) {
             $events[] = new ScheduleEvent(
                 $row['id'],
                 $row['user_id'],
-                $row['event_title'],
+                $row['title'],
                 $row['event_date'],
-                $row['notes'],
+                $row['description'] ?? '',
                 $row['color'] ?? '#4CAF50',
                 $row['location'] ?? '',
-                $row['priority'] ?? 'low'
+                'low'
             );
         }
         return $events;
     }
     public function save(ScheduleEvent $event): bool {
         $stmt = $this->db->prepare(
-            "INSERT INTO schedule (user_id, event_title, event_date, notes, color, location, priority) 
-             VALUES (:uid, :title, :date, :notes, :color, :location, :priority)"
+            "INSERT INTO schedule_events (user_id, title, event_date, description, color, location) 
+             VALUES (:uid, :title, :date, :notes, :color, :location)"
         );
         return $stmt->execute([
             'uid' => $event->userId,
@@ -38,13 +38,12 @@ class PdoScheduleRepository implements ScheduleRepositoryInterface {
             'date' => $event->eventDate,
             'notes' => $event->notes,
             'color' => $event->color ?? '#4CAF50',
-            'location' => $event->location ?? '',
-            'priority' => $event->priority ?? 'low'
+            'location' => $event->location ?? ''
         ]);
     }
     public function update(ScheduleEvent $event): bool {
         $stmt = $this->db->prepare(
-            "UPDATE schedule SET event_title = :title, event_date = :date, notes = :notes, color = :color, location = :location, priority = :priority 
+            "UPDATE schedule_events SET title = :title, event_date = :date, description = :notes, color = :color, location = :location 
              WHERE id = :id AND user_id = :uid"
         );
         return $stmt->execute([
@@ -54,12 +53,11 @@ class PdoScheduleRepository implements ScheduleRepositoryInterface {
             'date' => $event->eventDate,
             'notes' => $event->notes,
             'color' => $event->color ?? '#4CAF50',
-            'location' => $event->location ?? '',
-            'priority' => $event->priority ?? 'low'
+            'location' => $event->location ?? ''
         ]);
     }
     public function delete(int $id, int $userId): bool {
-        $stmt = $this->db->prepare("DELETE FROM schedule WHERE id = :id AND user_id = :uid");
+        $stmt = $this->db->prepare("DELETE FROM schedule_events WHERE id = :id AND user_id = :uid");
         return $stmt->execute(['id' => $id, 'uid' => $userId]);
     }
 }
