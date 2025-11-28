@@ -2,16 +2,12 @@
         </main>
     </div>
 <?php endif; ?>
-
 <footer class="footer">
     <p>&copy; <?= date('Y'); ?> <strong>ArtSync</strong> — <?= $t['footer_text']; ?></p>
 </footer>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js" crossorigin="anonymous"></script>
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // Notificações (sino)
     const bell = document.getElementById('notification-bell');
     const drop = document.getElementById('notification-dropdown');
     if (bell && drop) {
@@ -23,8 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!bell.contains(e.target) && !drop.contains(e.target)) drop.classList.remove('show');
         });
     }
-
-    // Menu do avatar (perfil)
     const avatar = document.getElementById('profileAvatar');
     const profileDrop = document.getElementById('profileDropdown');
     if (avatar && profileDrop) {
@@ -33,8 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!avatar.contains(e.target) && !profileDrop.contains(e.target)) profileDrop.classList.remove('show');
         });
     }
-
-    // Tema
     const body = document.body;
     const themeBtn = document.getElementById('toggleTheme');
     if (themeBtn) {
@@ -45,8 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const saved = localStorage.getItem('theme');
         if (saved === 'light') body.classList.add('light-theme');
     }
-
-    // Idioma (só visual)
     const langBtn = document.getElementById('toggleLang');
     if (langBtn) {
         langBtn.addEventListener('click', () => {
@@ -62,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
-
 <style>
 /* Topbar + Perfil */
 .topbar{
@@ -74,14 +63,12 @@ document.addEventListener('DOMContentLoaded', () => {
     height:100%; display:flex; align-items:center; justify-content:space-between; padding:0 30px;
 }
 .page-title{ color: var(--primary-text-color); font-size:1.6em; font-weight:500; }
-
 .profile-menu{ position:relative; }
 .profile-avatar{
     width:45px; height:45px; border-radius:50%; overflow:hidden;
     border: 2px solid var(--border-color); cursor:pointer;
 }
 .profile-avatar img{ width:100%; height:100%; object-fit:cover; }
-
 .profile-dropdown{
     position:absolute; top:60px; right:0; width:220px;
     background: rgba(10,10,15,.95); border: 1px solid var(--border-color);
@@ -94,10 +81,8 @@ document.addEventListener('DOMContentLoaded', () => {
 }
 .profile-dropdown .dropdown-item:hover{ background: rgba(255,255,255,.06); color: var(--primary-text-color); }
 .profile-dropdown hr{ border:none; border-top:1px solid var(--border-color); margin:8px 0; }
-
 /* Ajusta conteúdo por causa da topbar fixa */
 .main-content{ margin-left:260px; margin-top:70px; }
-
 /* Modo claro */
 body.light-theme{
     --primary-text-color:#000;
@@ -107,6 +92,5 @@ body.light-theme{
     --border-color:rgba(0,0,0,.1);
 }
 </style>
-
 </body>
 </html>

@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Models;
-
 class ScheduleEvent {
     public function __construct(
         public ?int $id,
@@ -10,6 +8,7 @@ class ScheduleEvent {
         public string $eventDate,
         public ?string $notes,
         public string $color = '#4CAF50',
-        public string $location = ''
+        public string $location = '',
+        public string $priority = 'low'
     ) {}
 }

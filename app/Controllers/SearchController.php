@@ -1,16 +1,12 @@
 <?php
-
 namespace App\Controllers;
-
 class SearchController extends AuthController {
     private $pdo;
-
     public function __construct() {
         parent::__construct();
         $this->checkAuth();
         $this->pdo = new \PDO("mysql:host=localhost;dbname=artsync_db;charset=utf8mb4", 'root', '');
     }
-
     public function index() {
         $q = $_GET['q'] ?? '';
         $res = ['users' => [], 'topics' => [], 'features' => []];

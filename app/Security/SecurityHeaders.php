@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Security;
-
 class SecurityHeaders {
     public static function set(): void {
         header("X-Frame-Options: DENY");

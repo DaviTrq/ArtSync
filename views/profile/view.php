@@ -1,5 +1,4 @@
 <?php require __DIR__ . '/../layouts/header.php'; ?>
-
 <div class="profile-view-container">
     <div class="card" style="text-align: center; padding: 40px;">
         <?php
@@ -23,7 +22,13 @@
         </div>
         <h2 style="color: var(--primary-text-color); margin: 20px 0 10px;"><?= htmlspecialchars($user['artist_name']); ?></h2>
         <p style="color: var(--secondary-text-color); margin-bottom: 20px;"><?= htmlspecialchars($user['email']); ?></p>
-        
+        <?php if ($userId != $_SESSION['user_id']): ?>
+            <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
+                <a href="/portfolio/user?id=<?= $userId; ?>" class="btn-small"><i class="fas fa-briefcase"></i> <?= $t['portfolio']; ?></a>
+                <button id="connectionBtn" class="btn-small" style="min-width: 120px;">Carregando...</button>
+                <button class="btn-small" onclick="openChat(<?= $userId; ?>, '<?= htmlspecialchars($user['artist_name']); ?>')"><i class="fas fa-envelope"></i> <?= $t['message_btn']; ?></button>
+            </div>
+        <?php endif; ?>
         <?php if (!empty($user['bio'])): ?>
             <p style="color: var(--secondary-text-color); max-width: 600px; margin: 0 auto 30px; line-height: 1.6;">
                 <?= nl2br(htmlspecialchars($user['bio'])); ?>
@@ -31,25 +36,22 @@
         <?php else: ?>
             <p style="color: var(--secondary-text-color); font-style: italic; margin-bottom: 30px;"><?= $t['no_bio']; ?></p>
         <?php endif; ?>
-        
         <div style="display: flex; justify-content: center; gap: 40px; margin: 30px 0; padding: 20px; background: rgba(255,255,255,0.05);">
-            <div>
+            <a href="/network/connections?id=<?= $userId; ?>&type=connections" style="text-decoration: none; cursor: pointer;">
                 <div style="font-size: 2rem; font-weight: 600; color: var(--primary-text-color);"><?= $connections; ?></div>
                 <div style="color: var(--secondary-text-color); font-size: 0.85rem;"><?= $t['connections']; ?></div>
-            </div>
-            <div>
+            </a>
+            <a href="/network/connections?id=<?= $userId; ?>&type=followers" style="text-decoration: none; cursor: pointer;">
                 <div style="font-size: 2rem; font-weight: 600; color: var(--primary-text-color);"><?= $followers; ?></div>
                 <div style="color: var(--secondary-text-color); font-size: 0.85rem;"><?= $t['followers']; ?></div>
-            </div>
-            <div>
+            </a>
+            <a href="/network/connections?id=<?= $userId; ?>&type=following" style="text-decoration: none; cursor: pointer;">
                 <div style="font-size: 2rem; font-weight: 600; color: var(--primary-text-color);"><?= $following; ?></div>
                 <div style="color: var(--secondary-text-color); font-size: 0.85rem;"><?= $t['following']; ?></div>
-            </div>
+            </a>
         </div>
-        
         <small style="color: var(--secondary-text-color);"><?= $t['member_since']; ?> <?= date('d/m/Y', strtotime($user['created_at'])); ?></small>
     </div>
-
     <?php if (!empty($topics)): ?>
         <div class="card" style="margin-top: 20px;">
             <h3 style="color: var(--primary-text-color); margin-bottom: 15px;"><?= $t['topics_created']; ?></h3>
@@ -63,7 +65,6 @@
             </div>
         </div>
     <?php endif; ?>
-
     <?php if (!empty($comments)): ?>
         <div class="card" style="margin-top: 20px;">
             <h3 style="color: var(--primary-text-color); margin-bottom: 15px;"><?= $t['latest_comments']; ?></h3>
@@ -79,10 +80,48 @@
         </div>
     <?php endif; ?>
 </div>
-
 <style>
 .profile-view-container { max-width: 800px; margin: 0 auto; }
 .profile-avatar-large { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #c0c0c0, #808080); display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: 600; color: #000; margin: 0 auto; }
 </style>
-
+<?php if ($userId != $_SESSION['user_id']): ?>
+<script>
+const userId = <?= $userId; ?>;
+const btn = document.getElementById('connectionBtn');
+fetch(`/network/check-connection?user_id=${userId}`)
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'pending') {
+            btn.textContent = 'Pendente';
+            btn.disabled = true;
+            btn.style.opacity = '0.6';
+            btn.style.cursor = 'not-allowed';
+        } else if (data.status === 'accepted') {
+            btn.innerHTML = '<i class="fas fa-user-check"></i> Conectado';
+            btn.disabled = true;
+            btn.style.opacity = '0.6';
+            btn.style.cursor = 'not-allowed';
+        } else if (data.status === 'following') {
+            btn.innerHTML = '<i class="fas fa-user-check"></i> Seguindo';
+            btn.disabled = true;
+            btn.style.opacity = '0.6';
+            btn.style.cursor = 'not-allowed';
+        } else {
+            btn.innerHTML = '<i class="fas fa-user-plus"></i> Conectar';
+            btn.onclick = async () => {
+                const formData = new FormData();
+                formData.append('user_id', userId);
+                const response = await fetch('/network/connect', { method: 'POST', body: formData });
+                const result = await response.json();
+                if (result.success) {
+                    btn.textContent = 'Pendente';
+                    btn.disabled = true;
+                    btn.style.opacity = '0.6';
+                    btn.style.cursor = 'not-allowed';
+                }
+            };
+        }
+    });
+</script>
+<?php endif; ?>
 <?php require __DIR__ . '/../layouts/footer.php'; ?>

@@ -1,8 +1,6 @@
 <?php require __DIR__ . '/../layouts/header.php'; ?>
-
 <div class="forum-view-container">
     <a href="/forum" class="back-link"><i class="fas fa-arrow-left"></i> <?= $t['back']; ?></a>
-    
     <div class="reddit-post">
         <div class="post-votes">
             <i class="fas fa-arrow-up"></i>
@@ -56,7 +54,6 @@
             <?php endif; ?>
         </div>
     </div>
-
     <div class="comments-section">
         <div class="comment-form-card">
             <textarea id="mainComment" rows="3" placeholder="<?= $t['what_do_you_think']; ?>"></textarea>
@@ -74,7 +71,6 @@
                 <?= $t['allowed_files']; ?>
             </small>
         </div>
-
         <div class="comments-list">
             <?php foreach ($comments as $comment): ?>
                 <div class="reddit-comment" data-id="<?= $comment->id ?>">
@@ -101,14 +97,12 @@
                                 <?php endforeach; ?>
                             </div>
                         <?php endif; ?>
-
                     </div>
                 </div>
             <?php endforeach; ?>
         </div>
     </div>
 </div>
-
 <style>
 .forum-view-container { max-width: 900px; margin: 0 auto; }
 .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--secondary-text-color); text-decoration: none; margin-bottom: 20px; }
@@ -124,6 +118,18 @@
 .post-attachments { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
 .post-image { max-width: 100%; height: auto; border: 1px solid rgba(255, 255, 255, 0.1); }
 .post-audio { width: 100%; }
+video { width: 100%; max-height: 500px; background: #000; border: 1px solid rgba(255, 255, 255, 0.1); }
+video::-webkit-media-controls-panel { background: rgba(0,0,0,0.8); }
+audio { width: 70%; background: rgba(20, 20, 25, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 8px; }
+audio::-webkit-media-controls-panel { background: rgba(20, 20, 25, 0.9); }
+audio::-webkit-media-controls-play-button { filter: invert(1); }
+audio::-webkit-media-controls-mute-button { filter: invert(1); }
+audio::-webkit-media-controls-current-time-display, audio::-webkit-media-controls-time-remaining-display { color: #fff; font-family: 'Inter', sans-serif; }
+audio::-webkit-media-controls-timeline { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+video::-webkit-media-controls-play-button, video::-webkit-media-controls-current-time-display, video::-webkit-media-controls-time-remaining-display { color: #fff; }
+.comment-attachments audio { width: 70%; }
+.comment-attachments video { width: 100%; max-height: 400px; }
+.post-audio { width: 70%; }
 .daw-file { display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); text-decoration: none; color: var(--primary-text-color); }
 .daw-file:hover { background: rgba(255, 255, 255, 0.1); }
 .daw-icon { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.1); font-size: 1.5rem; color: var(--primary-text-color); }
@@ -142,7 +148,7 @@
 .comment-meta { display: flex; gap: 8px; align-items: center; color: var(--secondary-text-color); font-size: 0.85rem; margin-bottom: 8px; }
 .comment-meta strong { color: var(--primary-text-color); }
 .comment-text { color: var(--secondary-text-color); line-height: 1.5; margin-bottom: 10px; }
-.comment-attachments { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
+.comment-attachments { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; pointer-events: auto; }
 .attachment-link { display: inline-flex; align-items: center; gap: 8px; color: var(--secondary-text-color); text-decoration: none; padding: 8px 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); }
 .attachment-link:hover { background: rgba(255, 255, 255, 0.1); }
 .action-btn { background: transparent; border: none; color: var(--secondary-text-color); cursor: pointer; font-size: 0.85rem; padding: 4px 8px; }
@@ -150,12 +156,10 @@
 .reply-form { margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255, 255, 255, 0.05); }
 .reply-form textarea { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--primary-text-color); padding: 10px; font-family: 'Poppins', sans-serif; }
 </style>
-
 <script>
 function showFiles() {
     const fileInput = document.getElementById('mainAttachment');
     const fileList = document.getElementById('fileList');
-    
     if (fileInput.files.length > 0) {
         fileList.style.display = 'block';
         fileList.innerHTML = '<small style="color: var(--secondary-text-color);"><i class="fas fa-paperclip"></i> ' + 
@@ -165,11 +169,9 @@ function showFiles() {
         fileList.style.display = 'none';
     }
 }
-
 function submitComment(topicId) {
     const textarea = document.getElementById('mainComment');
     const fileInput = document.getElementById('mainAttachment');
-    
     const formData = new FormData();
     formData.append('topic_id', topicId);
     formData.append('content', textarea.value);
@@ -178,12 +180,10 @@ function submitComment(topicId) {
             formData.append('attachments[]', file);
         }
     }
-    
     fetch('/forum/comment', {
         method: 'POST',
         body: formData
     }).then(() => location.reload());
 }
 </script>
-
 <?php require __DIR__ . '/../layouts/footer.php'; ?>

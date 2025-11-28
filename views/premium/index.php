@@ -1,50 +1,41 @@
 <?php require __DIR__ . '/../layouts/header.php'; ?>
-
 <style>
 .premium-container {
     max-width: 1100px;
     margin: 30px auto;
     padding: 0 20px;
 }
-
 .premium-header {
     text-align: center;
     margin-bottom: 50px;
 }
-
 .premium-header h1 {
     font-size: 2rem;
     color: var(--primary-text-color);
     margin-bottom: 10px;
 }
-
 .premium-header p {
     font-size: 1rem;
     color: var(--secondary-text-color);
 }
-
 .pricing-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 25px;
 }
-
 .plan-card {
     background: var(--glass-bg);
     border: 1px solid var(--border-color);
     padding: 30px;
     transition: all 0.3s ease;
 }
-
 .plan-card:hover {
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
 }
-
 .plan-card.featured {
     border-width: 2px;
     position: relative;
 }
-
 .plan-badge {
     position: absolute;
     top: -12px;
@@ -59,32 +50,27 @@
     font-weight: 600;
     box-shadow: 0 2px 6px rgba(200, 200, 200, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
-
 .plan-name {
     font-size: 1.4rem;
     color: var(--primary-text-color);
     margin-bottom: 15px;
 }
-
 .plan-price {
     font-size: 2.5rem;
     font-weight: 600;
     color: var(--primary-text-color);
     margin-bottom: 5px;
 }
-
 .plan-price small {
     font-size: 1rem;
     color: var(--secondary-text-color);
     font-weight: 400;
 }
-
 .plan-features {
     list-style: none;
     padding: 0;
     margin: 25px 0;
 }
-
 .plan-features li {
     padding: 10px 0;
     color: var(--secondary-text-color);
@@ -93,16 +79,13 @@
     gap: 10px;
     font-size: 0.9rem;
 }
-
 .plan-features li i {
     color: var(--primary-text-color);
     margin-top: 2px;
 }
-
 .plan-features li.unavailable {
     opacity: 0.4;
 }
-
 .plan-btn {
     width: 100%;
     padding: 12px;
@@ -115,24 +98,20 @@
     cursor: pointer;
     transition: all 0.3s ease;
 }
-
 .plan-btn:hover {
     background: var(--hover-bg);
     border-color: var(--border-color);
 }
-
 .plan-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 </style>
-
 <div class="premium-container">
     <div class="premium-header">
         <h1><?= $t['plans_pricing']; ?></h1>
         <p><?= $t['choose_plan']; ?></p>
     </div>
-
     <div class="pricing-grid">
         <div class="plan-card">
             <h2 class="plan-name"><?= $t['free_plan']; ?></h2>
@@ -147,7 +126,6 @@
             </ul>
             <button class="plan-btn" disabled><?= $t['current_plan']; ?></button>
         </div>
-
         <div class="plan-card featured">
             <span class="plan-badge"><?= $t['recommended']; ?></span>
             <h2 class="plan-name"><?= $t['premium_plan']; ?></h2>
@@ -162,7 +140,6 @@
             </ul>
             <button class="plan-btn" onclick="alert('<?= $t['coming_soon']; ?>');"><?= $t['subscribe']; ?></button>
         </div>
-
         <div class="plan-card">
             <h2 class="plan-name"><?= $t['premium_plus_plan']; ?></h2>
             <div class="plan-price">R$ 49,90<small><?= $t['per_month']; ?></small></div>
@@ -178,5 +155,4 @@
         </div>
     </div>
 </div>
-
 <?php require __DIR__ . '/../layouts/footer.php'; ?>

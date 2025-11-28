@@ -1,16 +1,12 @@
 <?php
-
 namespace App\Controllers;
-
 class NetworkController extends AuthController {
     private $pdo;
-
     public function __construct() {
         parent::__construct();
         $this->checkAuth();
         $this->pdo = new \PDO("mysql:host=localhost;dbname=artsync_db;charset=utf8mb4", 'root', '');
     }
-
     public function index() {
         $busca = $_GET['search'] ?? '';
         $usuarios = [];
@@ -31,7 +27,6 @@ class NetworkController extends AuthController {
             'search' => $busca
         ]);
     }
-
     public function connect() {
         $idUsr = $_POST['user_id'] ?? null;
         if (!$idUsr) {
@@ -49,7 +44,6 @@ class NetworkController extends AuthController {
         echo json_encode(['success' => true]);
         exit;
     }
-
     public function accept() {
         $idConex = $_POST['connection_id'] ?? null;
         !$idConex && exit(json_encode(['success' => false]));
@@ -58,7 +52,6 @@ class NetworkController extends AuthController {
         echo json_encode(['success' => true]);
         exit;
     }
-
     public function reject() {
         $idConex = $_POST['connection_id'] ?? null;
         !$idConex && exit(json_encode(['success' => false]));
@@ -67,7 +60,32 @@ class NetworkController extends AuthController {
         echo json_encode(['success' => true]);
         exit;
     }
-
+    public function acceptRequest() {
+        $idUsr = $_POST['user_id'] ?? null;
+        if (!$idUsr) exit(json_encode(['success' => false]));
+        $stmt = $this->pdo->prepare("UPDATE user_connections SET status = 'accepted' WHERE follower_id = ? AND following_id = ?");
+        $stmt->execute([$idUsr, $_SESSION['user_id']]);
+        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM user_connections WHERE follower_id = ? AND following_id = ?");
+        $stmt->execute([$_SESSION['user_id'], $idUsr]);
+        if ($stmt->fetchColumn() == 0) {
+            $stmt = $this->pdo->prepare("INSERT INTO user_connections (follower_id, following_id, status) VALUES (?, ?, 'accepted')");
+            $stmt->execute([$_SESSION['user_id'], $idUsr]);
+        }
+        $stmt = $this->pdo->prepare("DELETE FROM connection_notifications WHERE user_id = ? AND from_user_id = ?");
+        $stmt->execute([$_SESSION['user_id'], $idUsr]);
+        echo json_encode(['success' => true]);
+        exit;
+    }
+    public function rejectRequest() {
+        $idUsr = $_POST['user_id'] ?? null;
+        if (!$idUsr) exit(json_encode(['success' => false]));
+        $stmt = $this->pdo->prepare("DELETE FROM user_connections WHERE follower_id = ? AND following_id = ?");
+        $stmt->execute([$idUsr, $_SESSION['user_id']]);
+        $stmt = $this->pdo->prepare("DELETE FROM connection_notifications WHERE user_id = ? AND from_user_id = ?");
+        $stmt->execute([$_SESSION['user_id'], $idUsr]);
+        echo json_encode(['success' => true]);
+        exit;
+    }
     public function stats() {
         $idUsr = $_GET['user_id'] ?? $_SESSION['user_id'];
         $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM user_connections WHERE following_id = ? AND status = 'accepted'");
@@ -85,7 +103,6 @@ class NetworkController extends AuthController {
         echo json_encode(['connections' => $conex, 'followers' => $seguidores, 'following' => $seguindo]);
         exit;
     }
-
     public function list() {
         $stmt = $this->pdo->prepare("SELECT u.id, u.artist_name, u.email, u.profile_photo FROM users u INNER JOIN user_connections uc ON (u.id = uc.follower_id OR u.id = uc.following_id) WHERE (uc.follower_id = ? OR uc.following_id = ?) AND uc.status = 'accepted' AND u.id != ?");
         $stmt->execute([$_SESSION['user_id'], $_SESSION['user_id'], $_SESSION['user_id']]);
@@ -99,7 +116,6 @@ class NetworkController extends AuthController {
         echo json_encode(['connections' => $conex, 'followers' => $seguidores, 'following' => $seguindo]);
         exit;
     }
-
     public function checkConnection() {
         $idUsr = $_GET['user_id'] ?? null;
         if (!$idUsr) {
@@ -112,7 +128,6 @@ class NetworkController extends AuthController {
         echo json_encode(['status' => $status ?: 'none']);
         exit;
     }
-
     public function remove() {
         $idUsr = $_POST['user_id'] ?? null;
         if (!$idUsr) {
@@ -123,5 +138,48 @@ class NetworkController extends AuthController {
         $stmt->execute([$_SESSION['user_id'], $idUsr, $idUsr, $_SESSION['user_id']]);
         echo json_encode(['success' => true]);
         exit;
+    }
+    public function viewConnections() {
+        $idUsr = (int)($_GET['id'] ?? $_SESSION['user_id']);
+        $tipo = $_GET['type'] ?? 'connections';
+        $stmt = $this->pdo->prepare("SELECT artist_name FROM users WHERE id = ?");
+        $stmt->execute([$idUsr]);
+        $nomeUsr = $stmt->fetchColumn() ?: 'Usuário';
+        $usuarios = [];
+        if ($tipo === 'connections') {
+            $stmt = $this->pdo->prepare("
+                SELECT DISTINCT u.id, u.artist_name, u.email 
+                FROM users u 
+                INNER JOIN user_connections uc ON (u.id = uc.follower_id OR u.id = uc.following_id) 
+                WHERE (uc.follower_id = ? OR uc.following_id = ?) 
+                AND uc.status = 'accepted' 
+                AND u.id != ?
+            ");
+            $stmt->execute([$idUsr, $idUsr, $idUsr]);
+        } elseif ($tipo === 'followers') {
+            $stmt = $this->pdo->prepare("
+                SELECT u.id, u.artist_name, u.email 
+                FROM users u 
+                INNER JOIN user_connections uc ON u.id = uc.follower_id 
+                WHERE uc.following_id = ? AND uc.status = 'following'
+            ");
+            $stmt->execute([$idUsr]);
+        } else {
+            $stmt = $this->pdo->prepare("
+                SELECT u.id, u.artist_name, u.email 
+                FROM users u 
+                INNER JOIN user_connections uc ON u.id = uc.following_id 
+                WHERE uc.follower_id = ? AND uc.status IN ('pending', 'following')
+            ");
+            $stmt->execute([$idUsr]);
+        }
+        $usuarios = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        parent::view('network/connections', [
+            'pageTitle' => $nomeUsr,
+            'currentPage' => 'network',
+            'users' => $usuarios,
+            'type' => $tipo,
+            'userName' => $nomeUsr
+        ]);
     }
 }

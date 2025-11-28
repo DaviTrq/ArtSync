@@ -1,12 +1,9 @@
 <?php
-
 namespace App\Security;
-
 class RateLimiter {
     private static function getKey(string $acao, string $id): string {
         return "rate_limit_{$acao}_{$id}";
     }
-
     public static function check(string $acao, string $id, int $maxTent = 5, int $janela = 900): bool {
         $k = self::getKey($acao, $id);
         if (!isset($_SESSION[$k])) {
@@ -21,11 +18,9 @@ class RateLimiter {
         $_SESSION[$k]['count']++;
         return true;
     }
-
     public static function reset(string $acao, string $id): void {
         unset($_SESSION[self::getKey($acao, $id)]);
     }
-
     public static function getRemainingTime(string $acao, string $id, int $janela = 900): int {
         $k = self::getKey($acao, $id);
         if (!isset($_SESSION[$k])) return 0;

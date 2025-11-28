@@ -1,8 +1,6 @@
 <?php
-
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../config/env.php';
-
 use App\Controllers\AuthController;
 use App\Security\SecurityHeaders;
 use App\Controllers\DashboardController;
@@ -17,9 +15,8 @@ use App\Controllers\SettingsController;
 use App\Controllers\ForumController;
 use App\Controllers\NetworkController;
 use App\Controllers\SearchController;
-
+use App\Controllers\MessageController;
 SecurityHeaders::set();
-
 ini_set('session.cookie_httponly', 1);
 ini_set('session.use_strict_mode', 1);
 ini_set('session.cookie_samesite', 'Strict');
@@ -27,43 +24,34 @@ ini_set('session.cookie_lifetime', env('SESSION_LIFETIME', 3600));
 if (isset($_SERVER['HTTPS'])) {
     ini_set('session.cookie_secure', 1);
 }
-
 session_start();
-
 $request_uri = $_SERVER['REQUEST_URI'];
 $method = $_SERVER['REQUEST_METHOD'];
 $route = strtok($request_uri, '?');
-
 switch ($route) {
     case '/':
     case '':
         (new LandingController())->index();
         break;
-
     case '/login':
         $c = new AuthController();
         if ($method === 'GET') $c->showLogin();
         elseif ($method === 'POST') $c->handleLogin();
         break;
-
     case '/register':
         $c = new AuthController();
         if ($method === 'GET') $c->showRegister();
         elseif ($method === 'POST') $c->handleRegister();
         break;
-
     case '/logout':
         (new AuthController())->logout();
         break;
-
     case '/dashboard':
         (new DashboardController())->index();
         break;
-
     case '/schedule':
         (new ScheduleController())->index();
         break;
-
     case '/schedule/create':
         if ($method === 'POST') {
             (new ScheduleController())->create();
@@ -71,7 +59,6 @@ switch ($route) {
             header('Location: /schedule'); exit;
         }
         break;
-
     case '/schedule/update':
         if ($method === 'POST') {
             (new ScheduleController())->update();
@@ -79,15 +66,12 @@ switch ($route) {
             header('Location: /schedule'); exit;
         }
         break;
-
     case '/schedule/delete':
         (new ScheduleController())->delete();
         break;
-
     case '/portfolio':
         (new PortfolioController())->index();
         break;
-
     case '/portfolio/create':
         if ($method === 'POST') {
             (new PortfolioController())->create();
@@ -95,19 +79,25 @@ switch ($route) {
             header('Location: /portfolio'); exit;
         }
         break;
-
     case '/portfolio/delete':
         (new PortfolioController())->delete();
         break;
-
+    case '/portfolio/update':
+        if ($method === 'POST') {
+            (new PortfolioController())->update();
+        } else {
+            header('Location: /portfolio'); exit;
+        }
+        break;
     case '/portfolio/view':
         (new PortfolioController())->viewPublic();
         break;
-
+    case '/portfolio/user':
+        (new PortfolioController())->user();
+        break;
     case '/ai':
         (new AiController())->index();
         break;
-
     case '/ai/ask':
         if ($method === 'POST') {
             (new AiController())->ask();
@@ -115,23 +105,18 @@ switch ($route) {
             header('Location: /ai'); exit;
         }
         break;
-
     case '/admin':
         (new AdminController())->index();
         break;
-
     case '/admin/delete':
         (new AdminController())->deleteUser();
         break;
-
     case '/profile/view':
         (new ProfileController())->viewProfile();
         break;
-
     case '/profile/edit':
         (new ProfileController())->edit();
         break;
-
     case '/profile/update':
         if ($method === 'POST') {
             (new ProfileController())->update();
@@ -139,15 +124,12 @@ switch ($route) {
             header('Location: /profile/edit'); exit;
         }
         break;
-
     case '/premium':
         (new PremiumController())->index();
         break;
-
     case '/settings':
         (new SettingsController())->index();
         break;
-
     case '/settings/update-profile':
         if ($method === 'POST') {
             (new SettingsController())->updateProfile();
@@ -155,7 +137,6 @@ switch ($route) {
             header('Location: /settings'); exit;
         }
         break;
-
     case '/settings/delete-account':
         if ($method === 'POST') {
             (new SettingsController())->deleteAccount();
@@ -163,7 +144,6 @@ switch ($route) {
             header('Location: /settings'); exit;
         }
         break;
-
     case '/settings/change-language':
         if ($method === 'POST') {
             (new SettingsController())->changeLanguage();
@@ -171,7 +151,6 @@ switch ($route) {
             header('Location: /settings'); exit;
         }
         break;
-
     case '/settings/remove-photo':
         if ($method === 'POST') {
             (new SettingsController())->removePhoto();
@@ -179,15 +158,22 @@ switch ($route) {
             header('Location: /settings'); exit;
         }
         break;
-
+    case '/settings/get-message-privacy':
+        (new SettingsController())->getMessagePrivacy();
+        break;
+    case '/settings/update-message-privacy':
+        if ($method === 'POST') {
+            (new SettingsController())->updateMessagePrivacy();
+        } else {
+            header('Location: /settings'); exit;
+        }
+        break;
     case '/forum':
         (new ForumController())->index();
         break;
-
     case '/forum/view':
         (new ForumController())->view();
         break;
-
     case '/forum/create':
         if ($method === 'POST') {
             (new ForumController())->create();
@@ -195,7 +181,6 @@ switch ($route) {
             header('Location: /forum'); exit;
         }
         break;
-
     case '/forum/comment':
         if ($method === 'POST') {
             (new ForumController())->comment();
@@ -203,19 +188,15 @@ switch ($route) {
             header('Location: /forum'); exit;
         }
         break;
-
     case '/forum/approve':
         (new ForumController())->approve();
         break;
-
     case '/forum/delete':
         (new ForumController())->delete();
         break;
-
     case '/network':
         (new NetworkController())->index();
         break;
-
     case '/network/connect':
         if ($method === 'POST') {
             (new NetworkController())->connect();
@@ -223,7 +204,6 @@ switch ($route) {
             header('Location: /network'); exit;
         }
         break;
-
     case '/network/accept':
         if ($method === 'POST') {
             (new NetworkController())->accept();
@@ -231,7 +211,6 @@ switch ($route) {
             header('Location: /network'); exit;
         }
         break;
-
     case '/network/reject':
         if ($method === 'POST') {
             (new NetworkController())->reject();
@@ -239,19 +218,15 @@ switch ($route) {
             header('Location: /network'); exit;
         }
         break;
-
     case '/network/stats':
         (new NetworkController())->stats();
         break;
-
     case '/network/list':
         (new NetworkController())->list();
         break;
-
     case '/network/check-connection':
         (new NetworkController())->checkConnection();
         break;
-
     case '/network/remove':
         if ($method === 'POST') {
             (new NetworkController())->remove();
@@ -259,11 +234,48 @@ switch ($route) {
             header('Location: /network'); exit;
         }
         break;
-
+    case '/network/accept-request':
+        if ($method === 'POST') {
+            (new NetworkController())->acceptRequest();
+        } else {
+            header('Location: /network'); exit;
+        }
+        break;
+    case '/network/reject-request':
+        if ($method === 'POST') {
+            (new NetworkController())->rejectRequest();
+        } else {
+            header('Location: /network'); exit;
+        }
+        break;
+    case '/network/connections':
+        (new NetworkController())->viewConnections();
+        break;
     case '/search':
         (new SearchController())->index();
         break;
-
+    case '/messages':
+        (new MessageController())->index();
+        break;
+    case '/messages/chat':
+        (new MessageController())->chat();
+        break;
+    case '/messages/send':
+        if ($method === 'POST') {
+            (new MessageController())->send();
+        } else {
+            header('Location: /messages'); exit;
+        }
+        break;
+    case '/messages/unread-count':
+        (new MessageController())->getUnreadCount();
+        break;
+    case '/messages/get-conversations':
+        (new MessageController())->getConversations();
+        break;
+    case '/messages/get-chat':
+        (new MessageController())->getChat();
+        break;
     case '/notifications/mark-read':
         if ($method === 'POST' && isset($_SESSION['user_id'])) {
             require_once __DIR__ . '/../app/Services/NotificationService.php';
@@ -276,7 +288,6 @@ switch ($route) {
             exit;
         }
         break;
-
     case '/notifications/mark-all-read':
         if ($method === 'POST' && isset($_SESSION['user_id'])) {
             require_once __DIR__ . '/../app/Services/NotificationService.php';
@@ -286,7 +297,6 @@ switch ($route) {
             exit;
         }
         break;
-
     case '/notifications/mark-admin-read':
         if ($method === 'POST' && isset($_SESSION['user_id']) && !empty($_SESSION['is_admin'])) {
             require_once __DIR__ . '/../app/Services/NotificationService.php';
@@ -299,7 +309,6 @@ switch ($route) {
             exit;
         }
         break;
-
     default:
         http_response_code(404);
         echo '<h1>404 - Página Não Encontrada</h1>';

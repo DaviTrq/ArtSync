@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Models;
-
 class PortfolioItem
 {
     public function __construct(

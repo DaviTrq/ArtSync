@@ -1,31 +1,24 @@
 <?php
-
 namespace App\Controllers;
-
 use App\Services\AiService;
-
 class AiController extends AuthController {
     private AiService $svc;
-
     public function __construct() {
         parent::__construct();
         $this->checkAuth();
         $this->svc = new AiService();
     }
-
     public function index(): void {
         $idioma = $_SESSION['lang'] ?? 'pt-BR';
         $trad = require __DIR__ . '/../../config/lang.php';
         $t = $trad[$idioma] ?? $trad['pt-BR'];
         $this->view('ai/index', ['pageTitle' => $t['career_ai'], 'currentPage' => 'ia']);
     }
-
     public function ask(): void {
         $pergunta = htmlspecialchars(trim($_POST['user_question'] ?? ''), ENT_QUOTES, 'UTF-8');
         $arqConteudo = null;
         $mime = null;
         $nomeArq = null;
-
         if (isset($_FILES['media_file']) && $_FILES['media_file']['error'] === UPLOAD_ERR_OK) {
             $tmp = $_FILES['media_file']['tmp_name'];
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
@@ -41,12 +34,10 @@ class AiController extends AuthController {
                 $mime = null;
             }
         }
-
         $resp = $this->svc->getCareerAdvice($pergunta, $arqConteudo, $mime);
         $idioma = $_SESSION['lang'] ?? 'pt-BR';
         $trad = require __DIR__ . '/../../config/lang.php';
         $t = $trad[$idioma] ?? $trad['pt-BR'];
-
         $this->view('ai/index', [
             'pageTitle' => $t['career_ai'],
             'currentPage' => 'ia',

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,10 +7,8 @@
     <link rel="stylesheet" href="/css/landing.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-
 <body>
     <div class="background-waves"></div>
-
     <header>
         <div class="container header-content">
             <a href="" class="logo">
@@ -34,7 +31,6 @@
             </div>
         </div>
     </header>
-
     <main>
         <section id="hero">
             <div class="container hero-content">
@@ -44,12 +40,10 @@
                 <a href="/register" class="cta-button" id="cta-button">Comece Agora, de graça</a>
             </div>
         </section>
-
         <section id="features">
             <div class="container">
                 <h2>Ferramentas para Artistas Independentes</h2>
                 <p class="section-subtitle">Tudo que você precisa para gerenciar sua carreira musical em um só lugar</p>
-
                 <div class="features-grid">
                     <div class="feature-card">
                         <div class="icon"><i class="fas fa-chart-line"></i></div>
@@ -85,13 +79,11 @@
             </div>
         </section>
     </main>
-
     <footer>
         <div class="container">
             <p>&copy; <?php echo date('Y'); ?> Art Sync. Todos os direitos reservados.</p>
         </div>
     </footer>
-
     <div id="authModal" class="auth-modal" style="display: none;">
         <div class="auth-modal-content">
             <span class="close" onclick="closeAuthModal()">&times;</span>
@@ -102,7 +94,6 @@
             </div>
         </div>
     </div>
-
     <script src="/js/landing.js"></script>
     <script>
         function openAuthModal() {
@@ -117,7 +108,5 @@
             if (e.target.id === 'authModal') closeAuthModal();
         };
     </script>
-
 </body>
-
 </html>

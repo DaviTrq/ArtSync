@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Models;
-
 class ForumTopic {
     public $id;
     public $userId;

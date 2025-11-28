@@ -1,5 +1,4 @@
 <?php require __DIR__ . '/../layouts/header.php'; ?>
-
 <div class="network-container">
     <div class="search-header">
         <h2><?= $t['find_people']; ?></h2>
@@ -8,7 +7,6 @@
             <button type="submit" class="btn"><i class="fas fa-search"></i> <?= $t['search']; ?></button>
         </form>
     </div>
-
     <div class="users-grid">
         <?php if (empty($users) && $search): ?>
             <p style="color: var(--secondary-text-color); text-align: center;">Nenhum usuário encontrado.</p>
@@ -22,7 +20,6 @@
                     </div>
                     <h3><?= htmlspecialchars($user['artist_name']); ?></h3>
                     <p><?= htmlspecialchars($user['email']); ?></p>
-                    
                     <div style="display: flex; gap: 10px; justify-content: center; flex-direction: column; align-items: center;">
                         <a href="/profile/view?id=<?= $user['id']; ?>" class="btn-small">
                             <?= $t['view_profile']; ?>
@@ -50,7 +47,6 @@
         <?php endif; ?>
     </div>
 </div>
-
 <style>
 .network-container { max-width: 1200px; margin: 0 auto; }
 .search-header { margin-bottom: 30px; }
@@ -63,7 +59,6 @@
 .user-card h3 { color: var(--primary-text-color); margin: 10px 0 5px; font-size: 1.1rem; }
 .user-card p { color: var(--secondary-text-color); font-size: 0.85rem; margin-bottom: 15px; }
 </style>
-
 <script>
 function connect(userId, btn) {
     fetch('/network/connect', {
@@ -79,5 +74,4 @@ function connect(userId, btn) {
     });
 }
 </script>
-
 <?php require __DIR__ . '/../layouts/footer.php'; ?>

@@ -1,12 +1,8 @@
 <?php
-
 namespace App\Controllers;
-
 use App\Repositories\PDO\PdoUserRepository;
-
 class AdminController extends AuthController {
     protected PdoUserRepository $repo;
-
     public function __construct() {
         parent::__construct();
         $this->checkAuth();
@@ -20,7 +16,6 @@ class AdminController extends AuthController {
         }
         $this->repo = new PdoUserRepository();
     }
-
     public function index(): void {
         $usuarios = $this->repo->getAll();
         require_once __DIR__ . '/../../app/Repositories/PDO/PdoForumRepository.php';
@@ -42,12 +37,10 @@ class AdminController extends AuthController {
             'feedback' => $fb
         ]);
     }
-
     public function deleteUser(): void {
         $idioma = $_SESSION['lang'] ?? 'pt-BR';
         $trad = require __DIR__ . '/../../config/lang.php';
         $t = $trad[$idioma] ?? $trad['pt-BR'];
-
         $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
         if ($id <= 0) {
             $_SESSION['feedback'] = ['type' => 'error', 'message' => $t['invalid_id']];

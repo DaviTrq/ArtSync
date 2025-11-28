@@ -1,16 +1,12 @@
 <?php
-
 namespace App\Repositories\PDO;
-
 use App\Repositories\Contracts\ForumRepositoryInterface;
 use App\Models\ForumTopic;
 use App\Models\ForumComment;
 use PDO;
-
 class PdoForumRepository implements ForumRepositoryInterface
 {
     private $pdo;
-
     public function __construct()
     {
         $host = 'localhost';
@@ -20,7 +16,6 @@ class PdoForumRepository implements ForumRepositoryInterface
         $this->pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $pass);
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
-
     public function getAllTopics()
     {
         $stmt = $this->pdo->query("
@@ -32,7 +27,6 @@ class PdoForumRepository implements ForumRepositoryInterface
         ");
         return $stmt->fetchAll(PDO::FETCH_CLASS, ForumTopic::class);
     }
-
     public function getApprovedTopics()
     {
         $stmt = $this->pdo->query("
@@ -45,7 +39,6 @@ class PdoForumRepository implements ForumRepositoryInterface
         ");
         return $stmt->fetchAll(PDO::FETCH_CLASS, ForumTopic::class);
     }
-
     public function getTopicById($id)
     {
         $stmt = $this->pdo->prepare("
@@ -56,9 +49,7 @@ class PdoForumRepository implements ForumRepositoryInterface
         ");
         $stmt->execute([$id]);
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
-        
         if (!$data) return null;
-        
         $topic = new ForumTopic();
         $topic->id = $data['id'];
         $topic->userId = $data['user_id'];
@@ -71,33 +62,27 @@ class PdoForumRepository implements ForumRepositoryInterface
         $topic->updatedAt = $data['updated_at'];
         $topic->updated_at = $data['updated_at'];
         $topic->authorName = $data['authorName'];
-        
         $stmt = $this->pdo->prepare("SELECT * FROM forum_attachments WHERE topic_id = ?");
         $stmt->execute([$id]);
         $topic->attachments = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
         return $topic;
     }
-
     public function createTopic($userId, $title, $content)
     {
         $stmt = $this->pdo->prepare("INSERT INTO forum_topics (user_id, title, content) VALUES (?, ?, ?)");
         $stmt->execute([$userId, $title, $content]);
         return $this->pdo->lastInsertId();
     }
-
     public function createTopicAttachment($topicId, $filePath, $fileType)
     {
         $stmt = $this->pdo->prepare("INSERT INTO forum_attachments (topic_id, file_path, file_type) VALUES (?, ?, ?)");
         return $stmt->execute([$topicId, $filePath, $fileType]);
     }
-
     public function approveTopic($id)
     {
         $stmt = $this->pdo->prepare("UPDATE forum_topics SET is_approved = 1 WHERE id = ?");
         return $stmt->execute([$id]);
     }
-
     public function getCommentsByTopicId($topicId)
     {
         $stmt = $this->pdo->prepare("
@@ -109,7 +94,6 @@ class PdoForumRepository implements ForumRepositoryInterface
         ");
         $stmt->execute([$topicId]);
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
         $comments = [];
         foreach ($data as $row) {
             $comment = new ForumComment();
@@ -122,30 +106,24 @@ class PdoForumRepository implements ForumRepositoryInterface
             $comment->createdAt = $row['created_at'];
             $comment->created_at = $row['created_at'];
             $comment->authorName = $row['authorName'];
-            
             $stmt = $this->pdo->prepare("SELECT * FROM forum_attachments WHERE comment_id = ?");
             $stmt->execute([$comment->id]);
             $comment->attachments = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
             $comments[] = $comment;
         }
-        
         return $comments;
     }
-
     public function createComment($topicId, $userId, $content)
     {
         $stmt = $this->pdo->prepare("INSERT INTO forum_comments (topic_id, user_id, content) VALUES (?, ?, ?)");
         $stmt->execute([$topicId, $userId, $content]);
         return $this->pdo->lastInsertId();
     }
-
     public function createAttachment($commentId, $filePath, $fileType)
     {
         $stmt = $this->pdo->prepare("INSERT INTO forum_attachments (comment_id, file_path, file_type) VALUES (?, ?, ?)");
         return $stmt->execute([$commentId, $filePath, $fileType]);
     }
-
     public function deleteTopic($id)
     {
         $stmt = $this->pdo->prepare("DELETE FROM forum_attachments WHERE topic_id = ? OR comment_id IN (SELECT id FROM forum_comments WHERE topic_id = ?)");

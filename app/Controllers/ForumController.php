@@ -1,16 +1,11 @@
 <?php
-
 namespace App\Controllers;
-
 use App\Repositories\PDO\PdoForumRepository;
-
 class ForumController {
     private $repo;
-
     public function __construct() {
         $this->repo = new PdoForumRepository();
     }
-
     public function index() {
         $this->reqLogin();
         $topicos = $this->repo->getApprovedTopics();
@@ -18,7 +13,6 @@ class ForumController {
         $pageTitle = 'Fórum';
         require __DIR__ . '/../../views/forum/index.php';
     }
-
     public function view() {
         $this->reqLogin();
         $idTopico = $_GET['id'] ?? null;
@@ -30,7 +24,6 @@ class ForumController {
         $pageTitle = $topico->title;
         require __DIR__ . '/../../views/forum/view.php';
     }
-
     public function create() {
         $this->reqLogin();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -65,7 +58,6 @@ class ForumController {
         header('Location: /forum');
         exit;
     }
-
     public function comment() {
         $this->reqLogin();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -93,7 +85,6 @@ class ForumController {
             exit;
         }
     }
-
     public function approve() {
         $this->reqAdmin();
         $idTopico = $_GET['id'] ?? null;
@@ -105,7 +96,6 @@ class ForumController {
         }
         exit;
     }
-
     public function delete() {
         $this->reqAdmin();
         $idTopico = $_GET['id'] ?? null;
@@ -119,12 +109,10 @@ class ForumController {
         header('Location: /admin');
         exit;
     }
-
     private function reqLogin() {
         session_status() === PHP_SESSION_NONE && session_start();
         !isset($_SESSION['user_id']) && header('Location: /login') && exit;
     }
-
     private function reqAdmin() {
         $this->reqLogin();
         empty($_SESSION['is_admin']) && header('Location: /dashboard') && exit;

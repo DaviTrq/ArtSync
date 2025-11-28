@@ -4,12 +4,16 @@ Plataforma web pra ajudar artistas independentes a gerenciar carreira. Foi feito
 
 ## O que faz
 
-- Portfólio com galeria de imagens/áudios
-- Agenda de eventos com notificações
-- Dashboard com gráfico de exemplo
-- IA pra dar dicas de carreira (usa Gemini)
-- Fórum moderado
-- Sistema bilíngue (PT/EN)
+- **Portfólio/Press Kit**: Galeria com imagens, áudios e vídeos + link compartilhável
+- **Agenda**: Eventos com notificações automáticas por data
+- **Dashboard**: Gráficos e métricas de exemplo
+- **IA de Carreira**: Dicas personalizadas usando Google Gemini
+- **Fórum**: Sistema de tópicos e comentários com moderação admin
+- **Mensagens Diretas**: Chat em tempo real com anexos (imagens, vídeos, áudios, arquivos DAW)
+- **Rede Social**: Sistema de conexões entre artistas
+- **Busca Global**: Encontre usuários, tópicos e funcionalidades
+- **Sistema Bilíngue**: PT-BR e EN-US
+- **Tema Claro/Escuro**: Alternância de temas
 
 ## Quem fez
 
@@ -155,26 +159,62 @@ chmod -R 755 public/uploads/
 - Composer (PHPMailer)
 - Google Gemini AI (opcional)
 
-## Segurança
+## Arquitetura
 
-- CSRF protection
-- Rate limiting
-- Password hashing
-- PDO prepared statements
-- Security headers
-- Session management
+### Padrão MVC
+- **Models**: Entidades de domínio (User, PortfolioProject, etc)
+- **Views**: Templates PHP separados por módulo
+- **Controllers**: Lógica de aplicação e roteamento
+- **Repositories**: Camada de acesso a dados (PDO)
+- **Services**: Lógica de negócio (NotificationService)
 
-## Features
+### Segurança Implementada
+- **Autenticação**: Sistema de login com rate limiting
+- **Autorização**: Verificação de permissões em cada rota
+- **CSRF**: Tokens de proteção em formulários
+- **XSS**: Sanitização com htmlspecialchars()
+- **SQL Injection**: PDO prepared statements
+- **Upload**: Validação de tipo MIME e tamanho
+- **Sessions**: HttpOnly, Secure, SameSite cookies
+- **Headers**: CSP, X-Frame-Options, X-Content-Type-Options
 
-- Sistema de portfólio com múltiplas mídias
-- Agenda com notificações automáticas
-- Fórum com moderação admin
-- IA de carreira (Gemini)
-- Dashboard com gráficos
-- Tema claro/escuro
-- Bilíngue (PT-BR/EN-US)
+## Features Detalhadas
+
+### Portfólio/Press Kit
+- Upload de múltiplas mídias (imagens, áudios, vídeos)
+- Geração automática de link compartilhável
+- Visualização pública de projetos
+- Estatísticas de mídia por projeto
+
+### Sistema de Mensagens
+- Chat em tempo real
+- Anexar arquivos: imagens, vídeos, áudios
+- Suporte para arquivos DAW (.flp, .als, .ptx, .logic, .rpp)
+- Gravação de áudio direto pelo navegador
+- Indicador de mensagens não lidas
+- Fotos de perfil nos chats
+
+### Rede Social
 - Sistema de conexões entre usuários
-- Busca global
+- Visualizar perfis de outros artistas
+- Ver portfólio de outros usuários
+- Estatísticas de seguidores/seguindo
+
+### Fórum
+- Criação de tópicos com anexos
+- Sistema de comentários
+- Moderação admin (aprovar/rejeitar)
+- Notificações para admins
+
+### Segurança
+- Autenticação com sessões seguras
+- Rate limiting em login
+- CSRF protection
+- Password hashing (bcrypt)
+- PDO prepared statements
+- Security headers (CSP, X-Frame-Options, etc)
+- Validação de uploads
+- XSS protection
 
 ## Licença
 

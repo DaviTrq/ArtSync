@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Models;
-
 class PortfolioMedia {
     public function __construct(
         public ?int $id,

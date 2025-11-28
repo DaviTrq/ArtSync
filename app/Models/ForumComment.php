@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Models;
-
 class ForumComment {
     public $id;
     public $topicId;

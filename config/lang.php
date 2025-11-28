@@ -1,8 +1,6 @@
 <?php
-
 return [
     'pt-BR' => [
-        // Menu
         'dashboard' => 'Dashboard',
         'portfolio' => 'Portfólio',
         'schedule' => 'Agenda',
@@ -11,8 +9,6 @@ return [
         'settings' => 'Configurações',
         'logout' => 'Sair',
         'edit_profile' => 'Editar Perfil',
-        
-        // Dashboard
         'welcome' => 'Bem-vindo(a)',
         'career_summary' => 'Aqui está um resumo da sua carreira.',
         'streams_overview' => 'Visão Geral de Streams (Últimos 30 dias)',
@@ -22,8 +18,6 @@ return [
         'integration_pending' => 'Integração pendente.',
         'ai_career_widget' => 'IA de Carreira',
         'ai_career_desc' => 'Receba dicas para sua carreira.',
-        
-        // Settings
         'appearance' => 'Aparência',
         'theme' => 'Tema',
         'theme_desc' => 'Escolha entre tema escuro ou claro',
@@ -71,8 +65,6 @@ return [
         'latest_comments' => 'Últimos Comentários',
         'in_topic' => 'em',
         'no_bio' => 'Sem biografia',
-        
-        // Feedback messages
         'event_created' => 'Evento criado!',
         'event_updated' => 'Evento atualizado!',
         'event_deleted' => 'Evento excluído',
@@ -82,6 +74,7 @@ return [
         'invalid_data' => 'Dados inválidos',
         'title_required' => 'Título obrigatório',
         'project_created' => 'Projeto criado!',
+        'project_updated' => 'Projeto atualizado com sucesso!',
         'project_deleted' => 'Projeto excluído',
         'topic_created' => 'Tópico criado',
         'access_denied' => 'Acesso negado',
@@ -118,15 +111,11 @@ return [
         'medias_example_text' => '5 fotos + 2 vídeos + 3 áudios',
         'result_label' => 'Resultado:',
         'result_example' => 'Link compartilhável com galeria completa',
-        
-        // AI errors
         'ai_not_configured' => 'IA não configurada',
         'ask_question' => 'Faça uma pergunta',
         'error_processing' => 'Erro ao processar resposta',
         'auth_error' => 'Erro de autenticação',
         'ai_unavailable' => 'IA indisponível',
-        
-        // Premium
         'plans_pricing' => 'Planos e Preços',
         'choose_plan' => 'Escolha o plano ideal para impulsionar sua carreira',
         'free_plan' => 'Free',
@@ -155,8 +144,29 @@ return [
         'detailed_reports' => 'Relatórios detalhados',
         'vip_support' => 'Suporte VIP 24/7',
         'presskit' => 'PressKit',
-        
-        // Portfolio
+        'edit' => 'Editar',
+        'copy_link_btn' => 'Copiar Link',
+        'share_message' => 'Confira meu Press Kit: ',
+        'check_presskit' => 'Check out my Press Kit: ',
+        'about_project' => 'Sobre o Projeto',
+        'media_gallery' => 'Galeria de Mídia',
+        'statistics' => 'Estatísticas',
+        'images' => 'Imagens',
+        'videos' => 'Vídeos',
+        'audios' => 'Áudios',
+        'total' => 'Total',
+        'contact' => 'Contato',
+        'artists' => 'Artista(s)',
+        'add_artist' => 'Adicionar Artista',
+        'presskit_link' => 'Link do Press Kit',
+        'created_on' => 'Criado em',
+        'modified_on' => 'Modificado em',
+        'share_instagram' => 'Compartilhar no Instagram',
+        'share_x' => 'Compartilhar no X',
+        'export_pdf' => 'Exportar PDF',
+        'presskit_footer' => 'Press Kit gerado via ArtSync • Plataforma para artistas independentes',
+        'all_rights' => 'Todos os direitos reservados',
+        'files' => 'arquivos',
         'organize_share' => 'Organize e compartilhe seus trabalhos artísticos com o mundo.',
         'new_project' => 'Novo Projeto',
         'how_to_use' => 'Como usar?',
@@ -173,8 +183,8 @@ return [
         'file_formats' => 'Máximo 10MB por arquivo. Formatos: JPG, PNG, GIF, WEBP, MP3, WAV, MP4',
         'choose_files' => 'Escolher arquivos',
         'no_file_chosen' => 'Nenhum arquivo escolhido',
-        
-        // Schedule
+        'background_image' => 'Imagem de Fundo (opcional)',
+        'background_image_desc' => 'Imagem de fundo personalizada para o Press Kit',
         'week' => 'Semana',
         'organize_shows' => 'Organize seus shows, ensaios e compromissos.',
         'scheduled_events' => 'Eventos Marcados',
@@ -184,21 +194,21 @@ return [
         'event_color' => 'Cor do Evento',
         'attach_media' => 'Anexar Mídia',
         'notify_before' => 'Notificar antes do evento',
+        'priority_level' => 'Nível de Prioridade',
+        'priority_low' => 'Baixo',
+        'priority_medium' => 'Médio',
+        'priority_urgent' => 'Urgente',
         'save_event' => 'Salvar Evento',
         'edit_event' => 'Editar Evento',
         'save_changes_btn' => 'Salvar Alterações',
         'delete_event' => 'Excluir evento?',
         'new_event' => 'Novo Evento',
         'create' => 'Criar',
-        
-        // AI
         'ai_mentor_desc' => 'Converse com um mentor de IA para impulsionar sua carreira musical.',
         'ai_greeting' => 'Olá! Sou seu mentor de carreira. Como posso te ajudar a brilhar hoje?',
         'type_question' => 'Digite sua pergunta...',
         'attach_image_audio' => 'Anexar imagem ou áudio',
         'send' => 'Enviar',
-        
-        // Forum
         'search_topics' => 'Pesquisar tópicos...',
         'create_topic' => 'Criar Tópico',
         'new_topic' => 'Criar Novo Tópico',
@@ -217,16 +227,12 @@ return [
         'attachment' => 'Anexo',
         'by' => 'por',
         'comments' => 'comentários',
-        
-        // Search
         'search' => 'Buscar',
         'search_placeholder' => 'Buscar pessoas, tópicos ou funcionalidades...',
         'features' => 'Funcionalidades',
         'people' => 'Pessoas',
         'forum_topics_search' => 'Tópicos do Fórum',
         'no_results' => 'Nenhum resultado encontrado para',
-        
-        // Admin
         'manage_users' => 'Gerenciar Usuários',
         'manage_users_desc' => 'Administre usuários e aprove tópicos do fórum',
         'forum_topics' => 'Tópicos do Fórum',
@@ -243,13 +249,17 @@ return [
         'registration' => 'Cadastro',
         'approve_topic' => 'Aprovar este tópico?',
         'delete_user' => 'Excluir usuário',
-        
-        // Footer
+        'messages' => 'Mensagens',
+        'conversations' => 'Conversas',
+        'no_conversations' => 'Nenhuma conversa ainda. Envie uma mensagem para começar!',
+        'message_btn' => 'Mensagem',
         'footer_text' => 'Conectando sua arte ao mundo',
+        'message_privacy' => 'Privacidade de Mensagens',
+        'receive_messages' => 'Receber mensagens diretas',
+        'message_privacy_desc' => 'Controle quem pode enviar mensagens para você',
+        'no_messages' => 'Não receber mensagens',
     ],
-    
     'en-US' => [
-        // Menu
         'dashboard' => 'Dashboard',
         'portfolio' => 'Portfolio',
         'schedule' => 'Schedule',
@@ -258,8 +268,6 @@ return [
         'settings' => 'Settings',
         'logout' => 'Logout',
         'edit_profile' => 'Edit Profile',
-        
-        // Dashboard
         'welcome' => 'Welcome',
         'career_summary' => 'Here is a summary of your career.',
         'streams_overview' => 'Streams Overview (Last 30 days)',
@@ -269,8 +277,6 @@ return [
         'integration_pending' => 'Integration pending.',
         'ai_career_widget' => 'Career AI',
         'ai_career_desc' => 'Get tips for your career.',
-        
-        // Settings
         'appearance' => 'Appearance',
         'theme' => 'Theme',
         'theme_desc' => 'Choose between dark or light theme',
@@ -318,8 +324,6 @@ return [
         'latest_comments' => 'Latest Comments',
         'in_topic' => 'in',
         'no_bio' => 'No bio',
-        
-        // Feedback messages
         'event_created' => 'Event created!',
         'event_updated' => 'Event updated!',
         'event_deleted' => 'Event deleted',
@@ -329,6 +333,7 @@ return [
         'invalid_data' => 'Invalid data',
         'title_required' => 'Title required',
         'project_created' => 'Project created!',
+        'project_updated' => 'Project updated successfully!',
         'project_deleted' => 'Project deleted',
         'topic_created' => 'Topic created',
         'access_denied' => 'Access denied',
@@ -365,15 +370,11 @@ return [
         'medias_example_text' => '5 photos + 2 videos + 3 audio',
         'result_label' => 'Result:',
         'result_example' => 'Shareable link with complete gallery',
-        
-        // AI errors
         'ai_not_configured' => 'AI not configured',
         'ask_question' => 'Ask a question',
         'error_processing' => 'Error processing response',
         'auth_error' => 'Authentication error',
         'ai_unavailable' => 'AI unavailable',
-        
-        // Premium
         'plans_pricing' => 'Plans & Pricing',
         'choose_plan' => 'Choose the ideal plan to boost your career',
         'free_plan' => 'Free',
@@ -402,8 +403,29 @@ return [
         'detailed_reports' => 'Detailed reports',
         'vip_support' => 'VIP Support 24/7',
         'presskit' => 'PressKit',
-        
-        // Portfolio
+        'edit' => 'Edit',
+        'copy_link_btn' => 'Copy Link',
+        'share_message' => 'Check out my Press Kit: ',
+        'check_presskit' => 'Check out my Press Kit: ',
+        'about_project' => 'About the Project',
+        'media_gallery' => 'Media Gallery',
+        'statistics' => 'Statistics',
+        'images' => 'Images',
+        'videos' => 'Videos',
+        'audios' => 'Audios',
+        'total' => 'Total',
+        'contact' => 'Contact',
+        'artists' => 'Artist(s)',
+        'add_artist' => 'Add Artist',
+        'presskit_link' => 'Press Kit Link',
+        'created_on' => 'Created on',
+        'modified_on' => 'Modified on',
+        'share_instagram' => 'Share on Instagram',
+        'share_x' => 'Share on X',
+        'export_pdf' => 'Export PDF',
+        'presskit_footer' => 'Press Kit generated via ArtSync • Platform for independent artists',
+        'all_rights' => 'All rights reserved',
+        'files' => 'files',
         'organize_share' => 'Organize and share your artistic works with the world.',
         'new_project' => 'New Project',
         'how_to_use' => 'How to use?',
@@ -420,8 +442,8 @@ return [
         'file_formats' => 'Maximum 10MB per file. Formats: JPG, PNG, GIF, WEBP, MP3, WAV, MP4',
         'choose_files' => 'Choose files',
         'no_file_chosen' => 'No file chosen',
-        
-        // Schedule
+        'background_image' => 'Background Image (optional)',
+        'background_image_desc' => 'Custom background image for Press Kit',
         'week' => 'Week',
         'organize_shows' => 'Organize your shows, rehearsals and commitments.',
         'scheduled_events' => 'Scheduled Events',
@@ -431,21 +453,21 @@ return [
         'event_color' => 'Event Color',
         'attach_media' => 'Attach Media',
         'notify_before' => 'Notify before event',
+        'priority_level' => 'Priority Level',
+        'priority_low' => 'Low',
+        'priority_medium' => 'Medium',
+        'priority_urgent' => 'Urgent',
         'save_event' => 'Save Event',
         'edit_event' => 'Edit Event',
         'save_changes_btn' => 'Save Changes',
         'delete_event' => 'Delete event?',
         'new_event' => 'New Event',
         'create' => 'Create',
-        
-        // AI
         'ai_mentor_desc' => 'Chat with an AI mentor to boost your music career.',
         'ai_greeting' => 'Hello! I\'m your career mentor. How can I help you shine today?',
         'type_question' => 'Type your question...',
         'attach_image_audio' => 'Attach image or audio',
         'send' => 'Send',
-        
-        // Forum
         'search_topics' => 'Search topics...',
         'create_topic' => 'Create Topic',
         'new_topic' => 'Create New Topic',
@@ -464,16 +486,12 @@ return [
         'attachment' => 'Attachment',
         'by' => 'by',
         'comments' => 'comments',
-        
-        // Search
         'search' => 'Search',
         'search_placeholder' => 'Search people, topics or features...',
         'features' => 'Features',
         'people' => 'People',
         'forum_topics_search' => 'Forum Topics',
         'no_results' => 'No results found for',
-        
-        // Admin
         'manage_users' => 'Manage Users',
         'manage_users_desc' => 'Manage users and approve forum topics',
         'forum_topics' => 'Forum Topics',
@@ -490,8 +508,14 @@ return [
         'registration' => 'Registration',
         'approve_topic' => 'Approve this topic?',
         'delete_user' => 'Delete user',
-        
-        // Footer
+        'messages' => 'Messages',
+        'conversations' => 'Conversations',
+        'no_conversations' => 'No conversations yet. Send a message to start!',
+        'message_btn' => 'Message',
         'footer_text' => 'Connecting your art to the world',
+        'message_privacy' => 'Message Privacy',
+        'receive_messages' => 'Receive direct messages',
+        'message_privacy_desc' => 'Control who can send you messages',
+        'no_messages' => 'Do not receive messages',
     ]
 ];

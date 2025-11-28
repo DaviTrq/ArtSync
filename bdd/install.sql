@@ -18,20 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
     INDEX idx_created_at (created_at)
 );
 
-CREATE TABLE IF NOT EXISTS portfolio_items (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    file_path VARCHAR(500) NOT NULL,
-    description TEXT,
-    file_size INT UNSIGNED,
-    mime_type VARCHAR(100),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    INDEX idx_user_id (user_id),
-    INDEX idx_created_at (created_at)
-);
+
 
 CREATE TABLE IF NOT EXISTS schedule_events (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -179,3 +166,45 @@ CREATE TABLE IF NOT EXISTS ai_insights (
     INDEX idx_user_id (user_id),
     INDEX idx_created_at (created_at)
 );
+
+CREATE TABLE IF NOT EXISTS portfolio_projects (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    slug VARCHAR(500) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_user_id (user_id),
+    INDEX idx_slug (slug)
+);
+
+CREATE TABLE IF NOT EXISTS portfolio_media (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    project_id INT NOT NULL,
+    file_path VARCHAR(500) NOT NULL,
+    file_type ENUM('image', 'audio', 'video') NOT NULL,
+    mime_type VARCHAR(100),
+    file_size INT UNSIGNED,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES portfolio_projects(id) ON DELETE CASCADE,
+    INDEX idx_project_id (project_id)
+);
+
+CREATE TABLE IF NOT EXISTS direct_messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    sender_id INT NOT NULL,
+    receiver_id INT NOT NULL,
+    message TEXT NOT NULL,
+    is_read TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_sender (sender_id),
+    INDEX idx_receiver (receiver_id),
+    INDEX idx_created_at (created_at)
+);
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS message_privacy ENUM('anyone', 'connections', 'none') DEFAULT 'anyone' AFTER is_premium;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT AFTER email;

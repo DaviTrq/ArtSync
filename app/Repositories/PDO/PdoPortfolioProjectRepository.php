@@ -1,19 +1,14 @@
 <?php
-
 namespace App\Repositories\PDO;
-
 use App\Models\PortfolioProject;
 use App\Models\PortfolioMedia;
 use Config\Database;
 use PDO;
-
 class PdoPortfolioProjectRepository {
     private PDO $pdo;
-
     public function __construct() {
         $this->pdo = Database::getInstance();
     }
-
     public function getByUserId(int $userId): array {
         $stmt = $this->pdo->prepare("
             SELECT * FROM portfolio_projects 
@@ -21,7 +16,6 @@ class PdoPortfolioProjectRepository {
             ORDER BY created_at DESC
         ");
         $stmt->execute([':uid' => $userId]);
-        
         $projects = [];
         while ($row = $stmt->fetch()) {
             $project = new PortfolioProject(
@@ -30,14 +24,16 @@ class PdoPortfolioProjectRepository {
                 $row['title'],
                 $row['description'],
                 $row['slug'],
-                (bool)$row['is_public']
+                (bool)$row['is_public'],
+                [],
+                $row['created_at'] ?? null,
+                $row['updated_at'] ?? null
             );
             $project->media = $this->getMediaByProjectId($row['id']);
             $projects[] = $project;
         }
         return $projects;
     }
-
     public function getBySlug(string $slug): ?PortfolioProject {
         $stmt = $this->pdo->prepare("
             SELECT * FROM portfolio_projects 
@@ -45,21 +41,21 @@ class PdoPortfolioProjectRepository {
         ");
         $stmt->execute([':slug' => $slug]);
         $row = $stmt->fetch();
-        
         if (!$row) return null;
-        
         $project = new PortfolioProject(
             $row['id'],
             $row['user_id'],
             $row['title'],
             $row['description'],
             $row['slug'],
-            (bool)$row['is_public']
+            (bool)$row['is_public'],
+            [],
+            $row['created_at'] ?? null,
+            $row['updated_at'] ?? null
         );
         $project->media = $this->getMediaByProjectId($row['id']);
         return $project;
     }
-
     public function save(PortfolioProject $project): int {
         $stmt = $this->pdo->prepare("
             INSERT INTO portfolio_projects (user_id, title, description, slug, is_public)
@@ -74,7 +70,6 @@ class PdoPortfolioProjectRepository {
         ]);
         return (int)$this->pdo->lastInsertId();
     }
-
     public function addMedia(int $projectId, string $filePath, string $fileType, string $mimeType, int $fileSize): void {
         $stmt = $this->pdo->prepare("
             SELECT COALESCE(MAX(display_order), 0) + 1 as next_order 
@@ -82,7 +77,6 @@ class PdoPortfolioProjectRepository {
         ");
         $stmt->execute([':pid' => $projectId]);
         $order = $stmt->fetchColumn();
-
         $stmt = $this->pdo->prepare("
             INSERT INTO portfolio_media (project_id, file_path, file_type, mime_type, file_size, display_order)
             VALUES (:pid, :path, :type, :mime, :size, :order)
@@ -96,7 +90,6 @@ class PdoPortfolioProjectRepository {
             ':order' => $order
         ]);
     }
-
     public function getMediaByProjectId(int $projectId): array {
         $stmt = $this->pdo->prepare("
             SELECT * FROM portfolio_media 
@@ -104,7 +97,6 @@ class PdoPortfolioProjectRepository {
             ORDER BY display_order ASC
         ");
         $stmt->execute([':pid' => $projectId]);
-        
         $media = [];
         while ($row = $stmt->fetch()) {
             $media[] = new PortfolioMedia(
@@ -119,7 +111,19 @@ class PdoPortfolioProjectRepository {
         }
         return $media;
     }
-
+    public function update(int $projectId, int $userId, string $title, ?string $description): bool {
+        $stmt = $this->pdo->prepare("
+            UPDATE portfolio_projects 
+            SET title = :title, description = :description, updated_at = NOW()
+            WHERE id = :id AND user_id = :uid
+        ");
+        return $stmt->execute([
+            ':title' => $title,
+            ':description' => $description,
+            ':id' => $projectId,
+            ':uid' => $userId
+        ]);
+    }
     public function delete(int $projectId, int $userId): bool {
         $stmt = $this->pdo->prepare("
             DELETE FROM portfolio_projects 
@@ -127,7 +131,6 @@ class PdoPortfolioProjectRepository {
         ");
         return $stmt->execute([':id' => $projectId, ':uid' => $userId]);
     }
-
     public function deleteMedia(int $mediaId, int $userId): bool {
         $stmt = $this->pdo->prepare("
             DELETE pm FROM portfolio_media pm

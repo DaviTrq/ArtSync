@@ -1,16 +1,13 @@
 <?php require __DIR__ . '/../layouts/header.php'; ?>
-
 <header class="main-header">
     <h2><?= $t['manage_users']; ?></h2>
     <p><?= $t['manage_users_desc']; ?></p>
 </header>
-
 <?php if (isset($feedback)): ?>
     <div class="<?= $feedback['type'] === 'error' ? 'error-message' : 'success-message'; ?>">
         <?= htmlspecialchars($feedback['message']); ?>
     </div>
 <?php endif; ?>
-
 <div class="admin-container">
     <div class="card">
         <h3><?= $t['forum_topics']; ?></h3>
@@ -34,7 +31,7 @@
                         <td><?= $topic->created_at ? date('d/m/Y H:i', strtotime($topic->created_at)) : ''; ?></td>
                         <td>
                             <?php if ($topic->is_approved): ?>
-                                <span style="color: #28a745;">✓ <?= $t['approved']; ?></span>
+                                <span style="color: #28a745;">✓ <?= $t['approved'] ?? 'Aprovado'; ?></span>
                             <?php else: ?>
                                 <span style="color: #ffc107;">⏳ <?= $t['pending']; ?></span>
                             <?php endif; ?>
@@ -48,13 +45,15 @@
                                     <i class="fas fa-check"></i> <?= $t['approve']; ?>
                                 </button>
                             <?php endif; ?>
+                            <a href="/forum/delete-topic?id=<?= $topic->id; ?>" class="btn-small" onclick="return confirm('<?= $t['delete']; ?> <?= htmlspecialchars($topic->title); ?>?')" style="background: rgba(220, 53, 69, 0.2); border-color: #dc3545; color: #dc3545;">
+                                <i class="fas fa-trash"></i> <?= $t['delete']; ?>
+                            </a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
     </div>
-
     <div class="card" style="margin-top: 30px;">
         <h3><?= $t['registered_users']; ?></h3>
         <table class="admin-table">
@@ -91,7 +90,6 @@
         </table>
     </div>
 </div>
-
 <style>
 .admin-container { max-width: 1200px; margin: 0 auto; }
 .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
@@ -100,21 +98,17 @@
 .admin-table td { color: var(--secondary-text-color); }
 .admin-table tr:hover { background: rgba(255, 255, 255, 0.03); }
 </style>
-
 <script>
 function approveTopic(topicId) {
     if (!confirm('<?= $t['approve_topic']; ?>')) return;
-    
     fetch('/forum/approve?id=' + topicId)
         .then(r => r.json())
         .then(data => {
             if (data.success) {
                 const row = document.getElementById('topic-' + topicId);
-                row.querySelector('td:nth-child(5)').innerHTML = '<span style="color: #28a745;">✓ Aprovado</span>';
-                row.querySelector('td:nth-child(6) button').remove();
+                row.style.display = 'none';
             }
         });
 }
 </script>
-
 <?php require __DIR__ . '/../layouts/footer.php'; ?>

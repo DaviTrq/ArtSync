@@ -2,11 +2,9 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-
 $lang = $_SESSION['lang'] ?? 'pt-BR';
 $translations = require __DIR__ . '/../../config/lang.php';
 $t = $translations[$lang] ?? $translations['pt-BR'];
-
 $notification_count = 0;
 $notifications = [];
 if (!empty($_SESSION['user_id'])) {
@@ -22,7 +20,6 @@ if (!empty($_SESSION['user_id'])) {
     }
     $notification_count = count($notifications);
 }
-
 $avatarSrc = '/uploads/profile/default.png';
 if (!empty($_SESSION['user_id'])) {
     $uid = (int) $_SESSION['user_id'];
@@ -42,36 +39,30 @@ if (!empty($_SESSION['user_id'])) {
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle ?? 'ArtSync'); ?></title>
-
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/dashboard.css">
     <link rel="stylesheet" href="/css/portfolio.css">
     <link rel="stylesheet" href="/css/premium.css">
     <link rel="stylesheet" href="/css/light-theme-fix.css">
-
-
     <?php if (isset($currentPage) && $currentPage === 'portfolio'): ?>
         <link rel="stylesheet" href="/css/portfolio.css">
     <?php endif; ?>
-
     <?php if (isset($currentPage) && $currentPage === 'ai'): ?>
         <link rel="stylesheet" href="/css/portfolio.css">
     <?php endif; ?>
-
     <?php if (isset($currentPage) && ($currentPage === 'login' || $currentPage === 'register')): ?>
         <link rel="stylesheet" href="/css/login_register.css">
     <?php endif; ?>
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="/js/sidebar.js" defer></script>
     <script src="/js/premium.js" defer></script>
     <script src="/js/notifications.js" defer></script>
+    <script src="/js/messages.js" defer></script>
     <script>
         (function() {
             const currentPage = '<?= $currentPage ?? ''; ?>';
@@ -84,14 +75,10 @@ if (!empty($_SESSION['user_id'])) {
         })();
     </script>
 </head>
-
 <body class="<?= ($currentPage === 'login' || $currentPage === 'register') ? 'centered-body' : ''; ?>">
-
     <div class="background-waves"></div>
-
     <?php if (isset($_SESSION['user_id'])): ?>
         <div class="dashboard-container">
-
             <aside class="sidebar">
                 <a href="/dashboard" class="logo">
                     <img src="/images/artsync.png" alt="Art Sync Logo" style="height: 50px; margin-bottom: 30px;">
@@ -108,7 +95,6 @@ if (!empty($_SESSION['user_id'])) {
                         <?php endif; ?>
                     </ul>
                 </nav>
-
                 <div class="sidebar-footer">
                     <div class="notifications">
                         <a href="#" id="notification-bell">
@@ -129,6 +115,8 @@ if (!empty($_SESSION['user_id'])) {
                                                 <p><?= htmlspecialchars($notif['message']); ?></p>
                                                 <small><?= date('d/m/Y H:i', strtotime($notif['created_at'])); ?></small>
                                                 <div style="margin-top: 8px; display: flex; gap: 8px;">
+                                                    <button onclick="acceptConnection(<?= $notif['from_user_id']; ?>, this)" class="btn-small" style="font-size: 11px; padding: 4px 8px; background: rgba(76,175,80,0.2); border-color: rgba(76,175,80,0.4);">✓ Aceitar</button>
+                                                    <button onclick="rejectConnection(<?= $notif['from_user_id']; ?>, this)" class="btn-small" style="font-size: 11px; padding: 4px 8px; background: rgba(220,53,69,0.2); border-color: rgba(220,53,69,0.4);">✗ Recusar</button>
                                                     <a href="/profile/view?id=<?= $notif['from_user_id']; ?>" class="btn-small" style="font-size: 11px; padding: 4px 8px;"><?= $t['view_profile']; ?></a>
                                                 </div>
                                             </div>
@@ -164,15 +152,27 @@ if (!empty($_SESSION['user_id'])) {
                     </a>
                 </div>
             </aside>
-
             <header class="topbar">
                 <div class="topbar-content">
                     <h2 class="page-title"><?= htmlspecialchars($pageTitle ?? 'Dashboard'); ?></h2>
-
                     <div class="profile-menu">
                         <a href="/search" class="search-icon" title="Buscar">
                             <i class="fas fa-search"></i>
                         </a>
+                        <div class="messages-dropdown-container">
+                            <a href="#" class="messages-icon" title="Mensagens" id="messagesIcon">
+                                <i class="fas fa-envelope"></i>
+                                <span class="message-count" id="messageCount" style="display: none;">0</span>
+                            </a>
+                            <div class="messages-dropdown" id="messagesDropdown">
+                                <div class="messages-header">
+                                    <h4><?= $t['messages']; ?></h4>
+                                </div>
+                                <div class="messages-list" id="messagesList">
+                                    <p style="text-align: center; padding: 20px; color: var(--secondary-text-color);">Carregando...</p>
+                                </div>
+                            </div>
+                        </div>
                         <div class="profile-avatar" id="profileAvatar">
                             <?php if (file_exists(__DIR__ . '/../../public' . $avatarSrc) && $avatarSrc !== '/uploads/profile/default.png'): ?>
                                 <img src="<?= htmlspecialchars($avatarSrc); ?>" alt="Avatar">
@@ -198,7 +198,23 @@ if (!empty($_SESSION['user_id'])) {
                     </div>
                 </div>
             </header>
-
+            <div class="chat-modal" id="chatModal">
+                <div class="chat-modal-header">
+                    <button class="chat-back-btn" id="chatBackBtn"><i class="fas fa-arrow-left"></i></button>
+                    <div class="msg-avatar" id="chatAvatar"></div>
+                    <div class="chat-contact-info">
+                        <h4 class="chat-contact-name" id="chatContactName"></h4>
+                    </div>
+                </div>
+                <div class="chat-messages-area" id="chatMessagesArea"></div>
+                <div class="chat-input-area">
+                    <input type="file" id="chatFileInput" style="display:none;" accept="image/*,audio/*,video/*,.flp,.als,.ptx,.logic,.rpp">
+                    <button onclick="document.getElementById('chatFileInput').click()" title="Anexar arquivo"><i class="fas fa-paperclip"></i></button>
+                    <button id="recordAudioBtn" title="Gravar áudio"><i class="fas fa-microphone"></i></button>
+                    <input type="text" id="chatInput" placeholder="Digite sua mensagem...">
+                    <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
             <main class="main-content">
             <?php else: ?>
             <?php endif; ?>

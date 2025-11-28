@@ -1,28 +1,22 @@
 <?php
-
 namespace App\Controllers;
-
 use App\Models\PortfolioProject;
 use App\Repositories\PDO\PdoPortfolioProjectRepository;
-
 class PortfolioController extends AuthController {
     private PdoPortfolioProjectRepository $repoPortfolio;
     private string $dirUpload;
-
     public function __construct() {
         parent::__construct();
         $this->repoPortfolio = new PdoPortfolioProjectRepository();
         $this->dirUpload = __DIR__ . '/../../public/uploads/portfolio/';
         !is_dir($this->dirUpload) && mkdir($this->dirUpload, 0755, true);
     }
-
     public function index(): void {
         $this->checkAuth();
         $projetos = $this->repoPortfolio->getByUserId((int)$_SESSION['user_id']);
         $idioma = $_SESSION['lang'] ?? 'pt-BR';
         $trad = require __DIR__ . '/../../config/lang.php';
         $t = $trad[$idioma] ?? $trad['pt-BR'];
-
         $this->view('portfolio/index', [
             'pageTitle' => $t['portfolio'],
             'currentPage' => 'portfolio',
@@ -31,35 +25,27 @@ class PortfolioController extends AuthController {
         ]);
         unset($_SESSION['feedback']);
     }
-
     public function create(): void {
         $this->checkAuth();
         $_SERVER['REQUEST_METHOD'] !== 'POST' && header('Location: /portfolio') && exit;
-
         $idioma = $_SESSION['lang'] ?? 'pt-BR';
         $trad = require __DIR__ . '/../../config/lang.php';
         $t = $trad[$idioma] ?? $trad['pt-BR'];
-
         $titulo = htmlspecialchars(trim($_POST['title'] ?? ''), ENT_QUOTES, 'UTF-8');
         $desc = htmlspecialchars(trim($_POST['description'] ?? ''), ENT_QUOTES, 'UTF-8');
-
         if (empty($titulo)) {
             $_SESSION['feedback'] = ['type' => 'error', 'message' => $t['title_required']];
             header('Location: /portfolio');
             exit;
         }
-
         $slug = $this->gerarSlug($titulo, $_SESSION['user_id']);
         $proj = new PortfolioProject(null, (int)$_SESSION['user_id'], $titulo, $desc, $slug);
         $idProj = $this->repoPortfolio->save($proj);
-
         isset($_FILES['media_files']) && $this->uploadArquivos($idProj, $_FILES['media_files']);
-
         $_SESSION['feedback'] = ['type' => 'success', 'message' => $t['project_created']];
         header('Location: /portfolio');
         exit;
     }
-
     private function uploadArquivos(int $idProj, array $arqs): void {
         $tipos = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'audio/mpeg', 'audio/wav', 'video/mp4'];
         for ($i = 0; $i < count($arqs['name']); $i++) {
@@ -77,13 +63,33 @@ class PortfolioController extends AuthController {
             }
         }
     }
-
+    public function update(): void {
+        $this->checkAuth();
+        $_SERVER['REQUEST_METHOD'] !== 'POST' && header('Location: /portfolio') && exit;
+        $idioma = $_SESSION['lang'] ?? 'pt-BR';
+        $trad = require __DIR__ . '/../../config/lang.php';
+        $t = $trad[$idioma] ?? $trad['pt-BR'];
+        $id = isset($_POST['project_id']) ? (int)$_POST['project_id'] : 0;
+        $titulo = htmlspecialchars(trim($_POST['title'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $desc = htmlspecialchars(trim($_POST['description'] ?? ''), ENT_QUOTES, 'UTF-8');
+        if ($id <= 0 || empty($titulo)) {
+            $_SESSION['feedback'] = ['type' => 'error', 'message' => 'Dados inválidos'];
+            header('Location: /portfolio');
+            exit;
+        }
+        $this->repoPortfolio->update($id, (int)$_SESSION['user_id'], $titulo, $desc);
+        if (isset($_FILES['media_files']) && !empty($_FILES['media_files']['name'][0])) {
+            $this->uploadArquivos($id, $_FILES['media_files']);
+        }
+        $_SESSION['feedback'] = ['type' => 'success', 'message' => $t['project_updated']];
+        header('Location: /portfolio');
+        exit;
+    }
     public function delete(): void {
         $this->checkAuth();
         $idioma = $_SESSION['lang'] ?? 'pt-BR';
         $trad = require __DIR__ . '/../../config/lang.php';
         $t = $trad[$idioma] ?? $trad['pt-BR'];
-
         $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
         $id <= 0 && header('Location: /portfolio') && exit;
         $this->repoPortfolio->delete($id, (int)$_SESSION['user_id']);
@@ -91,7 +97,6 @@ class PortfolioController extends AuthController {
         header('Location: /portfolio');
         exit;
     }
-
     public function viewPublic(): void {
         $slug = $_GET['slug'] ?? '';
         if (empty($slug)) {
@@ -101,9 +106,38 @@ class PortfolioController extends AuthController {
         }
         $project = $this->repoPortfolio->getBySlug($slug);
         !$project && http_response_code(404) && exit('404');
+        $idioma = $_SESSION['lang'] ?? 'pt-BR';
+        $trad = require __DIR__ . '/../../config/lang.php';
+        $t = $trad[$idioma] ?? $trad['pt-BR'];
         require __DIR__ . '/../../views/portfolio/public.php';
     }
-
+    public function user(): void {
+        $this->checkAuth();
+        $userId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+        if ($userId <= 0) {
+            header('Location: /search');
+            exit;
+        }
+        $pdo = new \PDO("mysql:host=localhost;dbname=artsync_db;charset=utf8mb4", 'root', '');
+        $stmt = $pdo->prepare("SELECT artist_name FROM users WHERE id = ?");
+        $stmt->execute([$userId]);
+        $user = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (!$user) {
+            header('Location: /search');
+            exit;
+        }
+        $projetos = $this->repoPortfolio->getByUserId($userId);
+        $idioma = $_SESSION['lang'] ?? 'pt-BR';
+        $trad = require __DIR__ . '/../../config/lang.php';
+        $t = $trad[$idioma] ?? $trad['pt-BR'];
+        $this->view('portfolio/user', [
+            'pageTitle' => $user['artist_name'] . ' - ' . $t['portfolio'],
+            'currentPage' => 'portfolio',
+            'projects' => $projetos,
+            'user' => $user,
+            'userId' => $userId
+        ]);
+    }
     private function gerarSlug(string $titulo, int $idUsr): string {
         $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $titulo)));
         return 'presskit-' . $slug . '-' . $idUsr . '-' . time();

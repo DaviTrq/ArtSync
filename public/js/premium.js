@@ -1,5 +1,3 @@
-// Sistema de Pop-ups Premium Estratégicos
-
 const premiumPopups = {
     portfolio: {
         icon: '📊',
@@ -50,16 +48,12 @@ const premiumPopups = {
         trigger: 'dashboard_load'
     }
 };
-
 let popupShownThisSession = false;
 let popupCount = parseInt(localStorage.getItem('premiumPopupCount') || '0');
-
 function showPremiumPopup(type) {
     if (popupShownThisSession || popupCount >= 3) return;
-    
     const popup = premiumPopups[type];
     if (!popup) return;
-    
     const popupHTML = `
         <div class="premium-popup" id="premiumPopup">
             <div class="premium-popup-header">
@@ -77,20 +71,16 @@ function showPremiumPopup(type) {
             </div>
         </div>
     `;
-    
     const container = document.createElement('div');
     container.innerHTML = popupHTML;
     document.body.appendChild(container.firstElementChild);
-    
     setTimeout(() => {
         document.getElementById('premiumPopup').classList.add('show');
     }, 100);
-    
     popupShownThisSession = true;
     popupCount++;
     localStorage.setItem('premiumPopupCount', popupCount.toString());
 }
-
 function closePremiumPopup() {
     const popup = document.getElementById('premiumPopup');
     if (popup) {
@@ -98,28 +88,19 @@ function closePremiumPopup() {
         setTimeout(() => popup.remove(), 300);
     }
 }
-
-// Triggers estratégicos
 function initPremiumTriggers() {
-    // Trigger no Dashboard após 10 segundos
     if (window.location.pathname === '/dashboard') {
         setTimeout(() => showPremiumPopup('dashboard'), 10000);
     }
-    
-    // Trigger no Portfólio ao visualizar projeto
     if (window.location.pathname === '/portfolio') {
         setTimeout(() => showPremiumPopup('portfolio'), 15000);
     }
-    
-    // Trigger na IA após 3 perguntas
     if (window.location.pathname === '/ai') {
         const aiUsage = parseInt(sessionStorage.getItem('aiUsageCount') || '0');
         if (aiUsage >= 3) {
             setTimeout(() => showPremiumPopup('ai'), 2000);
         }
     }
-    
-    // Trigger na Agenda ao criar evento
     if (window.location.pathname === '/schedule') {
         const scheduleCount = parseInt(localStorage.getItem('scheduleEventCount') || '0');
         if (scheduleCount >= 5) {
@@ -127,8 +108,6 @@ function initPremiumTriggers() {
         }
     }
 }
-
-// Contador de uso da IA
 if (window.location.pathname === '/ai') {
     const form = document.getElementById('ai-form');
     if (form) {
@@ -138,11 +117,7 @@ if (window.location.pathname === '/ai') {
         });
     }
 }
-
-// Inicializar triggers
 document.addEventListener('DOMContentLoaded', initPremiumTriggers);
-
-// Badge Premium no header
 function addPremiumBadge() {
     const isPremium = document.body.dataset.premium === 'true';
     if (!isPremium) {
@@ -159,5 +134,4 @@ function addPremiumBadge() {
         }
     }
 }
-
 document.addEventListener('DOMContentLoaded', addPremiumBadge);

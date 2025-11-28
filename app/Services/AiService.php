@@ -1,18 +1,13 @@
 <?php
-
 namespace App\Services;
-
 class AiService {
     public function getCareerAdvice(string $pergunta, ?string $arqConteudo = null, ?string $mime = null): string {
         $idioma = $_SESSION['lang'] ?? 'pt-BR';
         $trad = require __DIR__ . '/../../config/lang.php';
         $t = $trad[$idioma] ?? $trad['pt-BR'];
-
         if (empty($pergunta)) return $t['ask_question'];
-        
         $chave = $_ENV['GEMINI_API_KEY'] ?? null;
         if (!$chave) return $t['ai_not_configured'];
-        
         $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=' . $chave;
         $contexto = "Você é um mentor especializado em carreiras artísticas e musicais independentes, com profundo conhecimento em:\n\n" .
             "1. ESTRATÉGIAS DE CARREIRA: Planejamento de lançamentos, construção de marca pessoal, networking, gestão de tempo e produtividade artística.\n" .
@@ -32,10 +27,8 @@ class AiService {
             "- Mantenha respostas entre 150-300 palavras\n" .
             "- Use português brasileiro natural, sem markdown\n\n" .
             "PERGUNTA DO ARTISTA: " . htmlspecialchars($pergunta, ENT_QUOTES, 'UTF-8');
-        
         $partes = [['text' => $contexto]];
         $arqConteudo && $mime && $partes[] = ['inline_data' => ['mime_type' => $mime, 'data' => base64_encode($arqConteudo)]];
-        
         $dados = [
             'contents' => [['parts' => $partes]],
             'generationConfig' => ['temperature' => 0.8, 'topK' => 40, 'topP' => 0.95, 'maxOutputTokens' => 1024, 'candidateCount' => 1],
@@ -46,7 +39,6 @@ class AiService {
                 ['category' => 'HARM_CATEGORY_DANGEROUS_CONTENT', 'threshold' => 'BLOCK_NONE']
             ]
         ];
-        
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
         curl_setopt($ch, CURLOPT_POST, true);
@@ -56,7 +48,6 @@ class AiService {
         $resp = curl_exec($ch);
         $codigo = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-        
         if ($codigo == 200 && $resp) {
             $resultado = json_decode($resp, true);
             $texto = $resultado['candidates'][0]['content']['parts'][0]['text'] ?? null;

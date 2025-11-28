@@ -1,5 +1,4 @@
 <?php require __DIR__ . '/../layouts/header.php'; ?>
-
 <div class="forum-header">
     <div class="search-bar">
         <i class="fas fa-search"></i>
@@ -9,7 +8,6 @@
         <i class="fas fa-plus"></i> <?= $t['create_topic']; ?>
     </button>
 </div>
-
 <div class="forum-container">
     <?php if (isset($_SESSION['flash_message'])): ?>
         <div class="<?= $_SESSION['flash_message']['type'] ?>-message">
@@ -17,7 +15,6 @@
         </div>
         <?php unset($_SESSION['flash_message']); ?>
     <?php endif; ?>
-
     <div class="topics-list" id="topicsList">
         <?php foreach ($topicos as $topic): ?>
             <a href="/forum/view?id=<?= $topic->id ?>" class="reddit-topic" data-title="<?= htmlspecialchars(strtolower($topic->title)); ?>">
@@ -41,7 +38,6 @@
         <?php endforeach; ?>
     </div>
 </div>
-
 <div id="createTopicModal" class="modal" style="display: none;">
     <div class="modal-content">
         <span class="close" onclick="closeModal('createTopicModal')">&times;</span>
@@ -65,7 +61,6 @@
         </form>
     </div>
 </div>
-
 <style>
 .forum-header { display: flex; gap: 15px; align-items: center; margin-bottom: 25px; max-width: 900px; margin-left: auto; margin-right: auto; }
 .search-bar { flex: 1; display: flex; align-items: center; gap: 10px; background: rgba(20, 20, 25, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); padding: 12px 18px; }
@@ -91,7 +86,6 @@
 .modal-content .close { position: absolute; top: 15px; right: 20px; color: var(--secondary-text-color); font-size: 28px; font-weight: bold; cursor: pointer; }
 .modal-content .close:hover { color: var(--primary-text-color); }
 </style>
-
 <script>
 function openModal(id) {
     document.getElementById(id).style.display = 'flex';
@@ -113,5 +107,4 @@ window.onclick = (e) => {
     if (e.target.id === 'createTopicModal') closeModal('createTopicModal');
 };
 </script>
-
 <?php require __DIR__ . '/../layouts/footer.php'; ?>

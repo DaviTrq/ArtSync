@@ -1,17 +1,11 @@
 <?php
-
 namespace Config;
-
 use PDO;
 use PDOException;
-
 require_once __DIR__ . '/env.php';
-
 class Database {
     private static ?PDO $inst = null;
-
     private function __construct() {}
-
     public static function getInstance(): PDO {
         if (self::$inst === null) {
             try {
@@ -25,7 +19,6 @@ class Database {
         }
         return self::$inst;
     }
-
     private function __clone() {}
     public function __wakeup() {}
 }
