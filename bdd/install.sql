@@ -4,9 +4,11 @@ USE artsync_db;
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     artist_name VARCHAR(100) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(191) NOT NULL UNIQUE,
+    bio TEXT,
     password VARCHAR(255) NOT NULL,
     is_admin BOOLEAN DEFAULT FALSE,
+    message_privacy ENUM('anyone', 'connections', 'none') DEFAULT 'anyone',
     is_premium BOOLEAN DEFAULT FALSE,
     premium_expires_at TIMESTAMP NULL,
     email_verified BOOLEAN DEFAULT FALSE,
@@ -16,7 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_email (email),
     INDEX idx_created_at (created_at)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 
@@ -35,7 +37,7 @@ CREATE TABLE IF NOT EXISTS schedule_events (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_user_id (user_id),
     INDEX idx_event_date (event_date)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS user_sessions (
     id VARCHAR(128) PRIMARY KEY,
@@ -47,7 +49,7 @@ CREATE TABLE IF NOT EXISTS user_sessions (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_user_id (user_id),
     INDEX idx_expires_at (expires_at)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS forum_topics (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -61,7 +63,7 @@ CREATE TABLE IF NOT EXISTS forum_topics (
     INDEX idx_user_id (user_id),
     INDEX idx_approved (is_approved),
     INDEX idx_created_at (created_at)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS forum_comments (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -73,7 +75,7 @@ CREATE TABLE IF NOT EXISTS forum_comments (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_topic_id (topic_id),
     INDEX idx_user_id (user_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS forum_attachments (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -86,7 +88,7 @@ CREATE TABLE IF NOT EXISTS forum_attachments (
     FOREIGN KEY (comment_id) REFERENCES forum_comments(id) ON DELETE CASCADE,
     INDEX idx_topic_id (topic_id),
     INDEX idx_comment_id (comment_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS notifications (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -99,7 +101,7 @@ CREATE TABLE IF NOT EXISTS notifications (
     FOREIGN KEY (event_id) REFERENCES schedule_events(id) ON DELETE CASCADE,
     INDEX idx_user_id (user_id),
     INDEX idx_is_read (is_read)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS admin_notifications (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -113,7 +115,7 @@ CREATE TABLE IF NOT EXISTS admin_notifications (
     FOREIGN KEY (topic_id) REFERENCES forum_topics(id) ON DELETE CASCADE,
     INDEX idx_user_id (user_id),
     INDEX idx_is_read (is_read)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS user_connections (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -121,10 +123,13 @@ CREATE TABLE IF NOT EXISTS user_connections (
     following_id INT NOT NULL,
     status ENUM('pending', 'accepted', 'following') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (follower_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (following_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE KEY unique_connection (follower_id, following_id),
     INDEX idx_follower (follower_id),
-    INDEX idx_following (following_id)
-);
+    INDEX idx_following (following_id),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS connection_notifications (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -138,7 +143,7 @@ CREATE TABLE IF NOT EXISTS connection_notifications (
     FOREIGN KEY (from_user_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_user_id (user_id),
     INDEX idx_is_read (is_read)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS subscriptions (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -151,7 +156,7 @@ CREATE TABLE IF NOT EXISTS subscriptions (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_user_id (user_id),
     INDEX idx_status (status)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS ai_insights (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -165,20 +170,21 @@ CREATE TABLE IF NOT EXISTS ai_insights (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_user_id (user_id),
     INDEX idx_created_at (created_at)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS portfolio_projects (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     title VARCHAR(255) NOT NULL,
     description TEXT,
-    slug VARCHAR(500) NOT NULL UNIQUE,
+    slug VARCHAR(191) NOT NULL UNIQUE,
+    background_image VARCHAR(500),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_user_id (user_id),
     INDEX idx_slug (slug)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS portfolio_media (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -190,7 +196,7 @@ CREATE TABLE IF NOT EXISTS portfolio_media (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (project_id) REFERENCES portfolio_projects(id) ON DELETE CASCADE,
     INDEX idx_project_id (project_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS direct_messages (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -204,7 +210,4 @@ CREATE TABLE IF NOT EXISTS direct_messages (
     INDEX idx_sender (sender_id),
     INDEX idx_receiver (receiver_id),
     INDEX idx_created_at (created_at)
-);
-
-ALTER TABLE users ADD COLUMN IF NOT EXISTS message_privacy ENUM('anyone', 'connections', 'none') DEFAULT 'anyone' AFTER is_premium;
-ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT AFTER email;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
